@@ -1,20 +1,29 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import * as React from 'react';
+import{useState} from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import signupPage from './signup.js';
+import loginPage from './login.js'; 
+import foodPage from './food.js';
+import { AppRegistry } from 'react-native';
 
-export default function App() {
+
+AppRegistry.registerComponent('main', () => App);  // a crucial addition in the project to expicitly define app registration when other dependecies was interfering in the automatic registration of the app component in the expo build AppEntry.js file
+
+const Stack = createStackNavigator();
+
+const App = () => {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="signup">
+        <Stack.Screen name="signup" options={{ headerShown: false }} component={signupPage} />
+        <Stack.Screen name="login" options={{ headerShown: false }} component={loginPage} />
+        <Stack.Screen name="food" options={{ headerShown: false }} component={foodPage} />
+      </Stack.Navigator>
+    </NavigationContainer>
+    
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;

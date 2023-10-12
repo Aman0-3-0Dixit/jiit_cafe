@@ -35,16 +35,14 @@ export default function Login() {
   
 
   const handleSignUp = () => {
-    // Perform sign-up logic here
-    // This function will be called when the button is pressed
-    // You can add your sign-up logic here
+    // sign-up logic
   };
 
   return (
     <KeyboardAvoidingView
     style={{ flex: 1 }}
     behavior='height'
-    keyboardShouldPersistTaps='always' // This should handle taps outside TextInput
+    keyboardShouldPersistTaps='always' // handle taps outside TextInput
     keyboardVerticalOffset={-500}
     >
     
@@ -52,7 +50,7 @@ export default function Login() {
     <SafeAreaView style={styles.curvedLine}/>
     <Image
         source={require('./imgs/jcafelogo1-removebg-preview.png')} 
-        style={{ width: 70, height: 70, position:'absolute', top: 60, left: 40 }} // Adjust the dimensions as needed
+        style={{ width: 70, height: 70, position:'absolute', top: 60, left: 40 }}
     />
     
       <Text style={{fontSize: 25, fontWeight: 'bold',position:'absolute', textAlign: 'left', left:125 ,top:75, color: 'black'}}>
@@ -62,11 +60,11 @@ export default function Login() {
 
             <Image
                 source={require('./icons/id-card.png')} 
-                style={{ width: 40, height: 40, position:'absolute', top: 65, left: 15 }} // Adjust the dimensions as needed
+                style={{ width: 40, height: 40, position:'absolute', top: 65, left: 15 }}
             /> 
             <View style={[styles.fields, {bottom:200, right: 30,}]} overflow = 'hidden' >
               <TextInput style={{color: 'white', right: 60, }}
-                         keyboardType="numeric" // Specify the keyboard type here 
+                         keyboardType="numeric"
                          placeholder='Enrollment No.' 
                          placeholderTextColor= 'white' 
                          onChangeText={enrollmentNum} 
@@ -75,7 +73,7 @@ export default function Login() {
 
             <Image
                 source={require('./icons/security.png')} 
-                style={{ width: 40, height:40, position:'absolute', top: 140, left: 15 }} // Adjust the dimensions as needed
+                style={{ width: 40, height:40, position:'absolute', top: 140, left: 15 }}
             /> 
 
             <View style={[styles.fields, {bottom:120, right: 30,}]} overflow = 'hidden' >
@@ -99,7 +97,7 @@ export default function Login() {
 
             <Image
                  source={require('./icons/profile.png')} 
-                 style={{ width: 80, height: 80, position:'absolute', top: -40, left: 135 }} // Adjust the dimensions as needed
+                 style={{ width: 80, height: 80, position:'absolute', top: -40, left: 135 }} 
             /> 
 
             <Text style={{position:'absolute', bottom : -30}}>

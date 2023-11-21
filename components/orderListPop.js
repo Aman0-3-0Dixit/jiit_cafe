@@ -1,8 +1,10 @@
-// CustomPopup.js
+//orderListPop.js
 import React from 'react';
 import { View, Text, Modal, TouchableOpacity } from 'react-native';
+import { useSelectedItems } from '../SelectedItemsContext.js';
 
-export default function CustomPopup({ visible, onClose, selectedItems, foodItems }) {
+export default function CustomPopup({ visible, onClose, foodItems }) {
+  const {selectedItems} = useSelectedItems();
   const totalJcoins = selectedItems.reduce((acc, selectedItem) => {
     const item = foodItems.find((foodItem) => foodItem.id === selectedItem.id);
     return acc + item.coinCount;

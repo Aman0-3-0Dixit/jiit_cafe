@@ -68,7 +68,7 @@ const renderScene = SceneMap({
         });
         const color = index === i ? useColorModeValue('#000', '#e6e5e5') : useColorModeValue('#1f2937', '#a1a1aa');
         const borderColor = index === i ? 'cyan.500' : useColorModeValue('coolGray.200', 'gray.400');
-        return <Box borderBottomWidth={3} borderColor={ borderColor} flex={1} alignItems="center" p="0" cursor="pointer" height={12}  >
+        return <Box borderBottomWidth={3} borderColor={ borderColor} flex={1} alignItems="center" p="0" cursor="pointer" height={12} >
                < Pressable onPress={() => {
              console.log(i);
              navigation.navigate(route.navigTo);
@@ -89,6 +89,7 @@ const renderScene = SceneMap({
     left: 0,
     right: 0,
     height: 49,
+    backgroundColor: '#f5f5f5',
   }} 
   />;
 

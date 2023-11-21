@@ -1,9 +1,14 @@
+//cards.js
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Box, Heading, AspectRatio, Image, Text, Center, HStack, Stack, NativeBaseProvider, Flex, Button, AddIcon, MinusIcon } from "native-base";
-
+import { useSelectedItems } from '../SelectedItemsContext.js';
 
 export function Cards ({ imageUrl, dishName, coinCount, id, onCountChange }) {
+
+    // fetching the initial count from the global state
+    const { selectedItems } = useSelectedItems();
+    const initialCount = selectedItems.find((item) => item.id === id)?.count || 0;
 
     const [count, setCount] = useState(0);
     const prevCount = count;
@@ -23,9 +28,7 @@ export function Cards ({ imageUrl, dishName, coinCount, id, onCountChange }) {
       }
     };
 
-   
-
-
+    
   return < Box alignItems = "center" w = {'100%'} >
     <Box width = "100%"  maxWidth = {330} mx = {16} my = {8}>
       <Box
@@ -65,7 +68,7 @@ export function Cards ({ imageUrl, dishName, coinCount, id, onCountChange }) {
           >
             <MinusIcon />
           </Button>
-          <Text fontSize="lg">{count}</Text>
+          <Text fontSize="lg">{initialCount}</Text>
           <Button
             size="sm"
             variant="outline"

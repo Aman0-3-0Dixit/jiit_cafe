@@ -1,3 +1,4 @@
+//food.js
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useRef } from 'react';
 import { KeyboardAvoidingView, ScrollView, TouchableOpacity } from 'react-native';
@@ -8,18 +9,24 @@ import { NativeBaseProvider, Box, Center } from "native-base";
 import { FlatList } from 'react-native';
 import { BottomTab } from './components/bottomTab.js';
 import { reduce } from 'lodash';
-
+import { useSelectedItems } from './SelectedItemsContext.js';
 
 
 export default function Food () {
   const navigation = useNavigation();
 
-  const [selectedItems, setSelectedItems] = useState([]);
+  const { selectedItems, setSelectedItems, cardData, addOrUpdateItemInCart } = useSelectedItems();
   const [prevCost, setNewTotalCost] = useState(0);
   const [selectedItemCounts, setSelectedItemCounts] = useState({});
   const totalCount = reduce(selectedItems, (sum, item) => sum + item.count, 0);
   const flatListRef = useRef(); // Reference to the FlatList component
   const [searchText, setSearchText] = useState(''); // State to store the search text
+ 
+
+  // Handle card press to add items to the cart
+  const handleCardPress = (itemId) => {
+    addOrUpdateItemInCart(itemId);
+  };
 
   // State to control the visibility of the account box
   const [isAccountBoxVisible, setIsAccountBoxVisible] = useState(false);
@@ -29,8 +36,8 @@ export default function Food () {
     setIsAccountBoxVisible(!isAccountBoxVisible);
   };
 
-
   const handleCountChange = (itemId, newCount, prevCount) => {
+
     // Find the item in the selectedItems array
     const selectedItemIndex = selectedItems.findIndex((item) => item.id === itemId);
   
@@ -39,6 +46,9 @@ export default function Food () {
   
     // Calculate the change in Jcoin count based on the newCount and prevCount
     const coinChange = (newCount - prevCount) * selectedItem.coinCount;
+
+    // Update the item information with the count
+    const updatedItem = { ...selectedItem, count: newCount };
   
     // Update the Jcoin count
     setNewTotalCost((prevCost) => prevCost + coinChange);
@@ -56,7 +66,6 @@ export default function Food () {
   
     setSelectedItemCounts(updatedCounts);
   
-    // Update the selected items array with the correct counts
     const updatedItems = Object.keys(updatedCounts).map((id) => {
       const count = updatedCounts[id];
       const item = cardData.find((item) => item.id === id);
@@ -64,11 +73,11 @@ export default function Food () {
     });
   
     setSelectedItems(updatedItems);
-
+  
     // Update the cardData array if needed
     cardData.forEach((item) => {
-       const count = updatedCounts[item.id] || 0;
-       item.count = count;
+      const count = updatedCounts[item.id] || 0;
+      item.count = count;
     });
 
     if (newCount > prevCount) {
@@ -110,8 +119,10 @@ export default function Food () {
     searchItem(newText);
   };
 
+  
 
-  const cardData = [
+
+  /*const cardData = [
     { id: '1', imageUrl: require('./jiitcafeassests/Indian-samosa-chutney.webp'), dishName: 'Samosa', coinCount: 10 },
     { id: '2', imageUrl: require('./jiitcafeassests/pasta.png'), dishName: 'Pasta', coinCount: 20 },
     { id: '3', imageUrl: require('./jiitcafeassests/patties.png'), dishName: 'Patty', coinCount: 10 },
@@ -120,10 +131,10 @@ export default function Food () {
     { id: '6', imageUrl: require('./jiitcafeassests/hotdog.png'), dishName: 'Hotdog', coinCount: 20 },
     { id: '7', imageUrl: require('./jiitcafeassests/coffee.png'), dishName: 'Coffee', coinCount: 10 },
     // Add more card data as needed
-  ];
+  ];*/
 
   const renderCard = ({ item }) => (
-    <Cards imageUrl={item.imageUrl} id={item.id} dishName={item.dishName} price={item.price} coinCount={item.coinCount}  onCountChange={(id,newCount,prevCount) => handleCountChange(item.id, newCount,prevCount)}  />
+    <Cards imageUrl={item.imageUrl} id={item.id} dishName={item.dishName} price={item.price} coinCount={item.coinCount}  onCountChange={(id,newCount,prevCount) => handleCountChange(item.id, newCount,prevCount)} count={item.count}  />
   );
 
     

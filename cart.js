@@ -1,14 +1,25 @@
+//cart.js
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, ScrollView, TouchableOpacity } from 'react-native';
 import { StyleSheet, Text, View, SafeAreaView, Image, TextInput, Flex } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import {Cards} from './components/cards.js';
+import { Dimensions } from 'react-native';
 import { NativeBaseProvider, Box, Center } from "native-base";
 import { FlatList } from 'react-native';
 import { BottomTab } from './components/bottomTab.js';
+import { useSelectedItems } from './SelectedItemsContext.js';
+import { SwipeRow } from 'native-base';
+import SwipeValueBasedUi from './components/swipeList.js';
+
 
 export default function Cart () {
+    // Get the screen width
+    const screenWidth = Dimensions.get('window').width;
+    const screenLength = Dimensions.get('window').height;
+
+    const { selectedItems, removeItemFromCart, cardData } = useSelectedItems();
     return (
         <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -19,6 +30,7 @@ export default function Cart () {
         
         <SafeAreaView style={styles.container} keyboardShouldPersistTaps='always'>
         <SafeAreaView style={styles.curvedLine}/>
+
         <Image
             source={require('./imgs/jcafelogo1-removebg-preview.png')} 
             style={{ width: 60, height: 60, position:'absolute', top: 60, left: 30 }} // Adjust the dimensions as needed
@@ -27,29 +39,45 @@ export default function Cart () {
           <Text style={{fontSize: 19, fontWeight: 'bold', position:'absolute', textAlign: 'left', left:100 ,top:75, color: 'black'}}>
             JIIT CAFE</Text>
   
-            <View style={[styles.fields, {bottom:311, right:85, width: 100, height: 50, backgroundColor: 'white', borderColor:'black', borderWidth: 1, flexDirection: 'row'}]} overflow = 'hidden' >
+            <View style={[styles.fields, {position:'absolute',top:60, right:85, width: 100, height: 50, backgroundColor: 'white', borderColor:'black', borderWidth: 1, flexDirection: 'row'}]} overflow = 'hidden' >
             <Image
             source={require('./jiitcafeassests/jcoins.png')} 
             style={{ width: 33, height: 33,  }} // Adjust the dimensions as needed
             />
-            <Text style={{fontSize:20, }} >100</Text>
+            <Text style={{fontSize:20, }}>100</Text>
             </View>
-  
   
             <Image
             source={require('./jiitcafeassests/account.png')} 
             style={{ width: 45, height: 45, position:'absolute', top: 60, right: 25 }} // Adjust the dimensions as needed
             />
 
-            <Image
-            source={require('./jiitcafeassests/nofood.png')} 
-            style={{ width: 300, height: 200, position:'absolute', top: 320, right: 60 }} // Adjust the dimensions as needed
-            />
+           {
+             selectedItems.length === 0 ? (
+               <View>
+                 <Center>
+                   <Image
+                     source={require('./jiitcafeassests/nofood.png')}
+                     style={{ width: 300, height: 200, position: 'absolute', top: 150, right: 10 }}
+                   />
+                   <Text style={{ fontSize: 20, fontWeight: '600', top: 380 }}> No items Found </Text>
+                   <Text style={{ fontSize: 16, fontWeight: '300', padding: 10, textAlign: 'center', top: 380 }}>
+                     Add items in your cart from the menu
+                   </Text>
+                 </Center>
+               </View>
+             ) : (
+              <View style={{ top: 150, height: screenLength - 40, }}>
+              {/* Content for when selectedItems.length is not 0 */}
+              {selectedItems.length > 0 && (
+                <SwipeValueBasedUi /> // Render the SwipeValueBasedUi once
+              )}
+              </View>
+                )
+           }
 
-            <Text style={{fontSize:20, fontWeight:'600'  , top:380 }}>No items Found</Text>
-            <Text style={{fontSize:16, fontWeight:'300', padding:10,  textAlign:'center'  , top:380 }}>Add items in your cart from the menu </Text>
-  
-            <StatusBar style="auto" />
+          
+          <StatusBar style="auto" />
   
          </SafeAreaView>
   
@@ -57,8 +85,7 @@ export default function Cart () {
             <BottomTab focussedIndex={3} />
          </NativeBaseProvider>
   
-      </KeyboardAvoidingView>
-      
+      </KeyboardAvoidingView>    
       
     );
 }
@@ -66,10 +93,11 @@ export default function Cart () {
 const styles = StyleSheet.create({
 
     container: {
-      flex: 1,
+      flexGrow: 1,
       alignItems: 'center', // Center horizontally
       justifyContent: 'center', // Center vertically
     },
+
   
     curvedLine: {
       position: 'absolute',
@@ -115,6 +143,31 @@ const styles = StyleSheet.create({
       borderColor: 'gray',
       borderWidth: 1,
       padding: 10,
+    },
+
+    cartItem: {
+      
+      flexDirection: 'row', // Items will be displayed in a row
+      alignItems: 'center', // Center items vertically
+      justifyContent: 'flex-start', // Distribute items evenly
+      marginVertical: 5, // Adjust the vertical margin as needed
+      padding: 10, // Add padding for spacing and visual appeal
+      backgroundColor: 'white', // Background color of the cart item
+      borderRadius: 10, // Add border radius for rounded corners
+    },
+
+
+    image: {
+      width: 50, // Adjust the image width as needed
+      height: 50, // Adjust the image height as needed
+      marginRight: 10, // Spacing between the image and text
+      borderRadius: 5, // Add border radius to the image
+    },
+
+
+    text: {
+      fontSize: 16, // Adjust the text font size as needed
+      fontWeight: 'bold', // Text style
     },
   
   

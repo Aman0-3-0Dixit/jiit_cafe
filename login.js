@@ -1,8 +1,15 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
-import { KeyboardAvoidingView, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { KeyboardAvoidingView, ScrollView, TouchableOpacity, Alert, Animated } from 'react-native';
 import { StyleSheet, Text, View, SafeAreaView, Image, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import  AsyncStorage  from '@react-native-async-storage/async-storage';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import AdminComponent from './components/adminTab';
+import UserComponent from './components/userTab'; 
+
+
+const Tab = createBottomTabNavigator();
 
 
 export default function Login() {
@@ -19,7 +26,59 @@ export default function Login() {
 
   const [enrollmentNo, getEnrollmentNo] = useState('');
   const [password, getPassword] = useState('');
+  const [adminNo, getAdminNo] = useState(''); // New state for admin number
+  const [selectedTab, setSelectedTab] = useState('Admin');
 
+    // Animation setup
+    const slideAnim = useRef(new Animated.Value(0)).current;
+
+  const slideBox = (toValue) => {
+    Animated.timing(slideAnim, {
+      toValue,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  useEffect(() => {
+    slideBox(selectedTab === 'Admin' ? 0 : 1);
+  }, [selectedTab]);
+
+
+    const adminBoxStyle = [
+      styles.roundedBox,
+      {
+        transform: [
+          {
+            translateX: slideAnim.interpolate({
+              inputRange: [-1, 1],
+              outputRange: [0, selectedTab === 'Admin' ? -350 : 350],
+            }),
+          },
+        ],
+      },
+    ];
+  
+    const userBoxStyle = [
+      styles.roundedBox,
+      {
+        transform: [
+          {
+            translateX: slideAnim.interpolate({
+              inputRange: [0,2],
+              outputRange: [210, selectedTab === 'User' ? -560 : 350],
+            }),
+          },
+        ],
+      },
+    ];
+
+
+
+  const adminNum = (newText) => {
+    newText = truncateText(newText, 10);
+    getAdminNo(newText);
+  };
 
   const enrollmentNum = (newText) => {
     newText = truncateText(newText, 10);
@@ -32,11 +91,61 @@ export default function Login() {
   };
 
 
+  const handleLogin = async () => {
+    
+    try {
+      if (selectedTab === 'Admin') {
+        navigation.navigate('stock');
+        /*const adminResponse = await fetch('http://192.168.1.104:3000/adminAuth/signIn', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            adminNo,
+            password,
+          }),
+        });
+  
+        console.log('Admin Response:', adminResponse); // Log the raw response
+        const adminData = await adminResponse.json();
+  
+        if (!adminResponse.ok) {
+          navigation.navigate('stock');
+        } else {
+          Alert.alert('Error', 'Incorrect admin credentials. Please try again.');
+        }*/
+
+      } else {
+        const userResponse = await fetch('http://192.168.1.6:3000/auth/signin', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            enrollmentNo,
+            password,
+          }),
+        });
+  
+        console.log('User Response:', userResponse); // Log the raw response
+  
+        const userData = await userResponse.json();
+  
+        if (userResponse.ok) {
+          navigation.navigate('food');
+        } else {
+          Alert.alert('Error', 'Incorrect user credentials. Please try again.');
+        }
+      }
+    } catch (error) {
+      console.error('Error signing in:', error);
+      // Handle other errors as needed
+    }
+  };
+  
   
 
-  const handleSignUp = () => {
-    // sign-up logic
-  };
 
   return (
     <KeyboardAvoidingView
@@ -47,6 +156,47 @@ export default function Login() {
     >
     
     <SafeAreaView style={styles.container} keyboardShouldPersistTaps='always'>
+        {/* Tab bar */}
+                <Tab.Navigator
+          screenOptions={{
+            activeTintColor: 'blue',
+            inactiveTintColor: 'gray',
+            labelStyle: { fontSize: 16, fontWeight: 'bold'},
+          }
+        } tabBarPosition="10"
+        >
+          <Tab.Screen
+            name="Admin"
+            options={{
+              tabBarLabel: 'Admin',
+              tabBarIcon: ({ color }) => (
+                <Image source={require('./jiitcafeassests/cart.png')} style={{ width: 24, height: 24, tintColor: color }} />
+              ),
+            }}
+          >
+            {() => <AdminComponent setSelectedTab={setSelectedTab} />}
+          </Tab.Screen>
+          <Tab.Screen
+            name="User"
+            options={{
+              tabBarLabel: 'User',
+              tabBarIcon: ({ color }) => (
+                <Image source={require('./jiitcafeassests/cart.png')} style={{ width: 24, height: 24, tintColor: color }} />
+              ),
+            }}
+          >
+            {() => <UserComponent setSelectedTab={setSelectedTab} />}
+          </Tab.Screen>
+          </Tab.Navigator>
+
+        {/* Display the corresponding component based on the selected tab */}
+        {selectedTab === 'Admin' ? (
+          <AdminComponent setSelectedTab={setSelectedTab} />
+        ) : (
+          <UserComponent setSelectedTab={setSelectedTab} />
+        )}
+
+
     <SafeAreaView style={styles.curvedLine}/>
     <Image
         source={require('./imgs/jcafelogo1-removebg-preview.png')} 
@@ -56,15 +206,59 @@ export default function Login() {
       <Text style={{fontSize: 25, fontWeight: 'bold',position:'absolute', textAlign: 'left', left:125 ,top:75, color: 'black'}}>
         JIIT CAFE</Text>
 
-       <View style={styles.roundedBox} keyboardShouldPersistTaps='always'>
+
+       <View  keyboardShouldPersistTaps='always'>
+       <Animated.View style={adminBoxStyle}>
+          <Image source={require('./icons/id-card.png')} style={{ width: 40, height: 40, position: 'absolute', top: 65, left: 15 }} />
+          <View style={[styles.fields, { bottom: 200, right: 30 }]} overflow='hidden'>
+            <TextInput
+              style={{ color: 'white', right: 60 }}
+              keyboardType="numeric"
+              placeholder='Admin No.'
+              placeholderTextColor='white'
+              onChangeText={adminNum}
+              value={adminNo}
+            />
+          </View>
+
+          <Image source={require('./icons/security.png')} style={{ width: 40, height: 40, position: 'absolute', top: 140, left: 15 }} />
+
+          <View style={[styles.fields, { bottom: 120, right: 30 }]} overflow='hidden'>
+            <TextInput
+              style={{ color: 'white', right: 30 }}
+              secureTextEntry={true}
+              placeholder='Enter Admin Password'
+              placeholderTextColor='white'
+              onChangeText={passWord}
+              value={password}
+            />
+          </View>
+
+          <TouchableOpacity 
+                       style={[styles.roundedBox, 
+                       {width: 200, height:60, backgroundColor:'black',bottom:30}]} 
+                       onPress={handleLogin}
+                >
+                    
+                <Text style={{color: 'white', alignItems:'center', fontSize: 20 }} >Login</Text>
+
+                </TouchableOpacity>
 
             <Image
+                 source={require('./icons/profile.png')} 
+                 style={{ width: 80, height: 80, position:'absolute', top: -40, left: 135 }} 
+            />
+          
+        </Animated.View>
+
+        <Animated.View style={[userBoxStyle,{backgroundColor:'turquoise'}]}>
+        <Image
                 source={require('./icons/id-card.png')} 
                 style={{ width: 40, height: 40, position:'absolute', top: 65, left: 15 }}
             /> 
             <View style={[styles.fields, {bottom:200, right: 30,}]} overflow = 'hidden' >
               <TextInput style={{color: 'white', right: 60, }}
-                         keyboardType="numeric"
+                         keyboardType="default"
                          placeholder='Enrollment No.' 
                          placeholderTextColor= 'white' 
                          onChangeText={enrollmentNum} 
@@ -88,7 +282,7 @@ export default function Login() {
                 <TouchableOpacity 
                        style={[styles.roundedBox, 
                        {width: 200, height:60, backgroundColor:'black',bottom:30}]} 
-                       onPress={() => navigation.navigate('food')}
+                       onPress={handleLogin}
                 >
                     
                 <Text style={{color: 'white', alignItems:'center', fontSize: 20 }} >Login</Text>
@@ -98,11 +292,15 @@ export default function Login() {
             <Image
                  source={require('./icons/profile.png')} 
                  style={{ width: 80, height: 80, position:'absolute', top: -40, left: 135 }} 
-            /> 
+            />
+
+             
 
             <Text style={{position:'absolute', bottom : -30}}>
                  Doesn't have an account? <Text style={{color: 'blue',}} onPress={() => navigation.navigate('signup')} >Sign up</Text>
             </Text>
+        </Animated.View>
+            
 
         </View>
     <StatusBar style="auto" />
@@ -138,7 +336,7 @@ const styles = StyleSheet.create({
   
     roundedBox: {
       position: 'absolute', // Change the position to absolute
-      bottom: 230,
+      bottom: 200,
       width: 350, // Adjust the width as needed
       height: 300, // Adjust the height as needed
       backgroundColor: 'aqua', // Background color of the box

@@ -1,20 +1,18 @@
 //food.js
 import { StatusBar } from 'expo-status-bar';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { KeyboardAvoidingView, ScrollView, TouchableOpacity } from 'react-native';
 import { StyleSheet, Text, View, SafeAreaView, Image, TextInput, Flex, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import {Cards} from './components/cards.js';
 import { NativeBaseProvider, Box, Center } from "native-base";
 import { FlatList } from 'react-native';
-import { BottomTabUser } from './components/bottomTabUser.js';
+import { BottomTabAdmin } from './components/bottomTabAdmin.js';
 import { reduce } from 'lodash';
 import { useSelectedItems } from './SelectedItemsContext.js';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { fetchUserDetails } from './fetchApi.js';
+import AdminCartButton from './components/adminCartButton.js';
 
-
-export default function Food () {
+export default function OrderPlace () {
   const navigation = useNavigation();
 
   const { selectedItems, setSelectedItems, cardData, addOrUpdateItemInCart } = useSelectedItems();
@@ -23,23 +21,7 @@ export default function Food () {
   const totalCount = reduce(selectedItems, (sum, item) => sum + item.count, 0);
   const flatListRef = useRef(); // Reference to the FlatList component
   const [searchText, setSearchText] = useState(''); // State to store the search text
-
-
-
-    // State to store user details
-    const [userDetails, setUserDetails] = useState(null);
-
-    // Fetch user details when the component mounts
-    useEffect(() => {
-      const fetchUserData = async () => {
-        const userDetailsData = await fetchUserDetails();
-        setUserDetails(userDetailsData);
-      };
-  
-      fetchUserData();
-    }, []);
-
-
+ 
 
   // Handle card press to add items to the cart
   const handleCardPress = (itemId) => {
@@ -179,11 +161,7 @@ export default function Food () {
           source={require('./jiitcafeassests/jcoins.png')} 
           style={{ width: 33, height: 33,  }} // Adjust the dimensions as needed
           />
-            {userDetails ? (
-             <Text style={{ fontSize: 20, }}>{userDetails.jCoins}</Text>
-              ) : (
-               <Text>0</Text>
-             )}
+          <Text style={{fontSize:20, }} >100</Text>
           </View>
 
           <View style={[styles.fields, {bottom:199, right:32, width:350}]} overflow = 'hidden' >
@@ -231,7 +209,7 @@ export default function Food () {
           })}
         />
           </Center>
-          <BottomTabUser focussedIndex={0} />
+          <BottomTabAdmin focussedIndex={3} />
        </NativeBaseProvider>
 
       
@@ -251,7 +229,7 @@ export default function Food () {
          />
         <TouchableOpacity
               onPress={() => {
-              navigation.navigate('cart');
+              navigation.navigate('admincart');
                }}
               style={styles.button}
         >

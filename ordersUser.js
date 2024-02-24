@@ -6,10 +6,10 @@ import { useNavigation } from '@react-navigation/native';
 import {Cards} from './components/cards.js';
 import { NativeBaseProvider, Box, Center } from "native-base";
 import { FlatList } from 'react-native';
-import { BottomTab } from './components/bottomTab.js';
+import { BottomTabUser } from './components/bottomTabUser.js';
 
 
-export default function Order () {
+export default function OrderUser () {
 
     function truncateText(text, maxLength) {
       if (text.length > maxLength) {
@@ -82,7 +82,7 @@ export default function Order () {
          </SafeAreaView>
   
          <NativeBaseProvider>
-            <BottomTab focussedIndex={1} />
+            <BottomTabUser focussedIndex={1} />
          </NativeBaseProvider>
   
       </KeyboardAvoidingView>

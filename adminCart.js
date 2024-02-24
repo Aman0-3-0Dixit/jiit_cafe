@@ -8,13 +8,12 @@ import {Cards} from './components/cards.js';
 import { Dimensions } from 'react-native';
 import { NativeBaseProvider, Box, Center } from "native-base";
 import { FlatList } from 'react-native';
-import { BottomTabUser } from './components/bottomTabUser.js';
+import { BottomTabAdmin } from './components/bottomTabAdmin.js';
 import { useSelectedItems } from './SelectedItemsContext.js';
 import { SwipeRow } from 'native-base';
 import SwipeValueBasedUi from './components/swipeList.js';
 
-
-export default function Cart () {
+export default function Admincart () {
     // Get the screen width
     const screenWidth = Dimensions.get('window').width;
     const screenLength = Dimensions.get('window').height;
@@ -24,33 +23,21 @@ export default function Cart () {
         <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior='height'
-        keyboardShouldPersistTaps='always' // This should handle taps outside TextInput
+        keyboardShouldPersistTaps='always' 
         keyboardVerticalOffset={-500}
         >
         
         <SafeAreaView style={styles.container} keyboardShouldPersistTaps='always'>
-        <SafeAreaView style={styles.curvedLine}/>
+        
 
         <Image
-            source={require('./imgs/jcafelogo1-removebg-preview.png')} 
-            style={{ width: 60, height: 60, position:'absolute', top: 60, left: 30 }} // Adjust the dimensions as needed
+            source={require('./jiitcafeassests/cafelogo.png')} 
+            style={{ width: 60, height: 60, position:'absolute', top: 35, left: 10 }} // Adjust the dimensions as needed
         />
         
-          <Text style={{fontSize: 19, fontWeight: 'bold', position:'absolute', textAlign: 'left', left:100 ,top:75, color: 'black'}}>
+      <Text style={{fontSize: 19, fontWeight: 'bold', position:'absolute', textAlign: 'left', left:74 ,top:55, color: 'black'}}>
             JIIT CAFE</Text>
-  
-            <View style={[styles.fields, {position:'absolute',top:60, right:85, width: 100, height: 50, backgroundColor: 'white', borderColor:'black', borderWidth: 1, flexDirection: 'row'}]} overflow = 'hidden' >
-            <Image
-            source={require('./jiitcafeassests/jcoins.png')} 
-            style={{ width: 33, height: 33,  }} // Adjust the dimensions as needed
-            />
-            <Text style={{fontSize:20, }}>100</Text>
-            </View>
-  
-            <Image
-            source={require('./jiitcafeassests/account.png')} 
-            style={{ width: 45, height: 45, position:'absolute', top: 60, right: 25 }} // Adjust the dimensions as needed
-            />
+ 
 
            {
              selectedItems.length === 0 ? (
@@ -75,14 +62,13 @@ export default function Cart () {
               </View>
                 )
            }
-
           
           <StatusBar style="auto" />
   
          </SafeAreaView>
   
          <NativeBaseProvider>
-            <BottomTabUser focussedIndex={3} />
+            <BottomTabAdmin focussedIndex={3} />
          </NativeBaseProvider>
   
       </KeyboardAvoidingView>    

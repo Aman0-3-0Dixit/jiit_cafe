@@ -42,11 +42,27 @@ export default function Signup () {
   };
 
 
+  const handleSignUp = async () => {
+    try {
+      const response = await fetch('http://192.168.1.6:3000/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          enrollmentNo,
+          password,
+        }),
+      });
   
-
-  const handleSignUp = () => {
-
+      const data = await response.json();
+      console.log(data); // Log the response from the server
+    } catch (error) {
+      console.error('Error signing up:', error);
+    }
   };
+  
 
   return (
     <KeyboardAvoidingView

@@ -33,7 +33,7 @@ const renderScene = SceneMap({
 });
 
 
- export function BottomTab({focussedIndex}) {
+ export function BottomTabUser({focussedIndex}) {
   const [index, setIndex] = React.useState(focussedIndex);
   const [routes] = React.useState([{
     key: 'first',
@@ -44,7 +44,7 @@ const renderScene = SceneMap({
     key: 'second',
     title: 'Tab 2',
     iconSource: require('../jiitcafeassests/a-orders.png'),
-    navigTo: 'orders',
+    navigTo: 'ordersUser',
   }, {
     key: 'third',
     title: 'Tab 3',

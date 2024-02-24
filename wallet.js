@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import {Cards} from './components/cards.js';
 import { NativeBaseProvider, Box, Center } from "native-base";
 import { FlatList } from 'react-native';
-import { BottomTab } from './components/bottomTab.js';
+import { BottomTabUser } from './components/bottomTabUser.js';
 
 export default function Wallet () {
 
@@ -57,7 +57,7 @@ export default function Wallet () {
          </SafeAreaView>
   
          <NativeBaseProvider>
-            <BottomTab focussedIndex={2} />
+            <BottomTabUser focussedIndex={2} />
          </NativeBaseProvider>
   
       </KeyboardAvoidingView>

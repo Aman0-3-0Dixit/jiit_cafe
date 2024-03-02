@@ -1,15 +1,29 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { KeyboardAvoidingView, ScrollView, TouchableOpacity } from 'react-native';
 import { StyleSheet, Text, View, SafeAreaView, Image, TextInput, Flex } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import {Cards} from './components/cards.js';
 import { NativeBaseProvider, Box, Center } from "native-base";
 import { FlatList } from 'react-native';
 import { BottomTabUser } from './components/bottomTabUser.js';
+import TokenPopup from './Tokenpopup';
+import OrderList from './orderList.js';
+import maintokenpage from './maintokenpage.js';
 
 
 export default function OrderUser () {
+
+  const [isTokenPopupVisible, setTokenPopupVisible] = useState(false);
+  const navigation = useNavigation();
+  const route = useRoute();
+
+  useEffect(() => {
+    // Check if the route has the showTokenPopup parameter
+    if (route.params?.showTokenPopup) {
+      setTokenPopupVisible(true);
+    }
+  }, [route.params]);
 
     function truncateText(text, maxLength) {
       if (text.length > maxLength) {
@@ -46,36 +60,44 @@ export default function OrderUser () {
         >
         
         <SafeAreaView style={styles.container} keyboardShouldPersistTaps='always'>
+          
         <SafeAreaView style={styles.curvedLine}/>
-        <Image
-            source={require('./imgs/jcafelogo1-removebg-preview.png')} 
-            style={{ width: 60, height: 60, position:'absolute', top: 60, left: 30 }} // Adjust the dimensions as needed
-        />
-        
-          <Text style={{fontSize: 19, fontWeight: 'bold', position:'absolute', textAlign: 'left', left:100 ,top:75, color: 'black'}}>
-            JIIT CAFE</Text>
-  
-            <View style={[styles.fields, {bottom:311, right:85, width: 100, height: 50, backgroundColor: 'white', borderColor:'black', borderWidth: 1, flexDirection: 'row'}]} overflow = 'hidden' >
+        {isTokenPopupVisible ? (
+          // Display TokenPopup if visible
+          <TokenPopup isVisible={isTokenPopupVisible} onClose={() => setTokenPopupVisible(false)} />
+        ) : (
+          // Display default content if TokenPopup is not visible
+          <>
+            <SafeAreaView style={styles.curvedLine} />
             <Image
-            source={require('./jiitcafeassests/jcoins.png')} 
-            style={{ width: 33, height: 33,  }} // Adjust the dimensions as needed
+              source={require('./imgs/jcafelogo1-removebg-preview.png')}
+              style={{ width: 60, height: 60, position: 'absolute', top: 60, left: 30 }}
             />
-            <Text style={{fontSize:20, }} >100</Text>
+            <Text style={{ fontSize: 19, fontWeight: 'bold', position: 'absolute', textAlign: 'left', left: 100, top: 75, color: 'black' }}>
+              JIIT CAFE
+            </Text>
+            <View style={[styles.fields, { bottom: 311, right: 85, width: 100, height: 50, backgroundColor: 'white', borderColor: 'black', borderWidth: 1, flexDirection: 'row' }]} overflow='hidden'>
+              <Image
+                source={require('./jiitcafeassests/jcoins.png')}
+                style={{ width: 33, height: 33 }}
+              />
+              <Text style={{ fontSize: 20 }}>100</Text>
             </View>
-  
-  
             <Image
-            source={require('./jiitcafeassests/account.png')} 
-            style={{ width: 45, height: 45, position:'absolute', top: 60, right: 25 }} // Adjust the dimensions as needed
+              source={require('./jiitcafeassests/account.png')}
+              style={{ width: 45, height: 45, position: 'absolute', top: 60, right: 25 }}
             />
-
             <Image
-            source={require('./jiitcafeassests/noorders.png')} 
-            style={{ width: 350, height: 350, position:'absolute', top: 140, right: 35 }} // Adjust the dimensions as needed
+              source={require('./jiitcafeassests/noorders.png')}
+              style={{ width: 350, height: 350, position: 'absolute', top: 140, right: 35 }}
             />
-
-            <Text style={{fontSize:20, fontWeight:'600'  , top:320 }}>No Orders Found</Text>
-            <Text style={{fontSize:16, fontWeight:'300', padding:10,  textAlign:'center'  , top:320 }}>Looks like you haven't ordered anything yet</Text>
+            <Text style={{ fontSize: 20, fontWeight: '600', top: 320 }}>No Orders Found</Text>
+            <Text style={{ fontSize: 16, fontWeight: '300', padding: 10, textAlign: 'center', top: 320 }}>
+              Looks like you haven't ordered anything yet
+            </Text>
+            <StatusBar style="auto" />
+          </>
+        )}
   
             <StatusBar style="auto" />
   

@@ -44,7 +44,7 @@ export default function Signup () {
 
   const handleSignUp = async () => {
     try {
-      const response = await fetch('http://192.168.1.6:3000/auth/signup', {
+      const response = await fetch('http:///192.168.1.2:3000/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

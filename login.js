@@ -7,7 +7,7 @@ import  AsyncStorage  from '@react-native-async-storage/async-storage';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import AdminComponent from './components/adminTab';
 import UserComponent from './components/userTab'; 
-
+import { useUser } from './userContext';
 
 const Tab = createBottomTabNavigator();
 
@@ -90,6 +90,8 @@ export default function Login() {
     getPassword(newText);
   };
 
+  const { updateUser } = useUser();
+
 
   const handleLogin = async () => {
     
@@ -117,7 +119,7 @@ export default function Login() {
         }*/
 
       } else {
-        const userResponse = await fetch('http://192.168.1.6:3000/auth/signin', {
+        const userResponse = await fetch('http://192.168.1.2:3000/auth/signin', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -131,9 +133,12 @@ export default function Login() {
         console.log('User Response:', userResponse); // Log the raw response
   
         const userData = await userResponse.json();
-  
+        console.log('User Data:', userData); // Log the parsed response
+
         if (userResponse.ok) {
+          updateUser(userData); // Update the user context with the user data
           navigation.navigate('food');
+          
         } else {
           Alert.alert('Error', 'Incorrect user credentials. Please try again.');
         }

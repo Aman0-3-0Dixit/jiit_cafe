@@ -1,10 +1,19 @@
 // models/user.js
 import mongoose from 'mongoose';
 
+const orderItemSchema = new mongoose.Schema({
+  coinCount: { type: Number, required: true },
+  count: { type: Number, required: true },
+  dishName: { type: String, required: true },
+  id: { type: String, required: true },
+  imageUrl: { type: Number, required: true },
+  key: { type: String, required: true },
+});
+
 const orderSchema = new mongoose.Schema({
   orderId: { type: String, required: true },
   orderDate: { type: Date, default: Date.now },
-  // Add more fields as needed
+  items: { type: [orderItemSchema], default: [] },
 });
 
 const userSchema = new mongoose.Schema({

@@ -4,9 +4,9 @@ config:
     fields:
       - "enrollmentNo"
       - "password"
-  target: 'http://192.168.1.6:3000'
+  target: 'http://192.168.1.3:3000'
   phases:
-    - duration: 5
+    - duration: 1
       arrivalRate: 221
 scenarios:
   - name: 'Signin'

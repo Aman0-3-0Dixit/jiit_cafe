@@ -1,7 +1,6 @@
 // fetchApi.mjs
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-//const BASE_URL = 'http://192.168.1.104:3000';
 export const fetchUserDetails = async () => {
   try {
     const token = await AsyncStorage.getItem('token');
@@ -12,7 +11,7 @@ export const fetchUserDetails = async () => {
       return null;
     }
 
-    const response = await fetch('http://192.168.1.6:3000/user/details', {
+    const response = await fetch('http:///192.168.1.2:3000/user/details', {
       method: 'GET',
       headers: {
         Authorization : `Bearer ${token}`,

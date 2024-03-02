@@ -2,8 +2,21 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/users.mjs';
-
+import SuccessOrders from '../models/successfulOrders.mjs';
+import FailedOrders from '../models/failedOrders.mjs';
+import PendingOrders from '../models/pendingOrders.mjs';
+import authenticateToken from '../middleware/auth.mjs';
+import crypto from 'crypto';
 const router = express.Router();
+
+// Function to generate a random alphanumeric string
+const generateRandomString = (length) => {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const randomString = Array.from(crypto.randomFillSync(new Uint8Array(length)))
+    .map((byte) => characters[byte % characters.length])
+    .join('');
+  return randomString;
+};
 
 // Secret key for signing JWT tokens
 const JWT_SECRET = 'helloworld';
@@ -69,6 +82,118 @@ router.post('/signin', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+
+
+router.post('/placeorder', authenticateToken, async (req, res) => {
+  const userId = req.user.userId;
+  console.log('User ID:', userId);
+
+  try {
+    // Fetch the user based on the user ID
+    const user = await User.findById(userId);
+
+    if (user) {
+      const { selectedItems } = req.body;
+      console.log(selectedItems);
+
+      const orderId = generateRandomString(5);
+
+      // Create a new order for the 'user' model schema
+      const newOrderForUser = {
+        orderId: orderId,
+        orderDate: new Date(),
+        items: selectedItems.map(item => ({
+          id: item.id,
+          dishName: item.dishName,
+          coinCount: item.coinCount,
+          count: item.count,
+          imageUrl: item.imageUrl,
+          key: item.key,
+        })),
+      };
+
+      // Update the user document with the new order in the user collection
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        {
+          $push: { pendingOrders: newOrderForUser },
+        },
+        { new: true }
+      );
+
+      // Create a new order for the 'pendingOrders' collection
+      const newOrderForPendingOrdersCollection = new PendingOrders({
+        orderId: orderId,
+        orderDate: new Date(),
+        orderTime: new Date().toLocaleTimeString(),
+        orderedBy: [{ name: user.name, enrollmentNo: user.enrollmentNo }],
+        items: selectedItems.map(item => ({
+          id: item.id,
+          dishName: item.dishName,
+          coinCount: item.coinCount,
+          count: item.count,
+          imageUrl: item.imageUrl,
+          key: item.key,
+        })),
+      });
+
+      // Save the new order to the 'pendingOrders' collection
+      await newOrderForPendingOrdersCollection.save();
+
+      res.status(200).json(updatedUser);
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error placing order:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+
+
+
+
+router.get('/pendingOrders', authenticateToken, async (req, res) => {
+  console.log('Received request at /pendingOrders');
+  const userId = req.user.userId;
+  console.log('User ID:', userId);
+
+  try {
+    const user = await User.findById(userId);
+    if (user) {
+      console.log('User found:', user);
+
+      const ordersWithDetails = user.pendingOrders.map(order => ({
+        _id: order._id,
+        orderDate: order.orderDate,
+        orderId: order.orderId,
+        items: order.items.map(item => ({
+          dishName: item.dishName,
+          coinCount: item.coinCount,
+          count: item.count,
+          imageUrl: item.imageUrl,
+          key: item.key,
+          id: item.id,
+        }))
+      }));
+
+      res.status(200).json(ordersWithDetails);
+      console.log('Pending orders:', ordersWithDetails);
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching pending orders:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+
+
 
 
 router.get('/checkUser/:enrollmentNo', async (req, res) => {

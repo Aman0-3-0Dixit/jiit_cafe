@@ -21,6 +21,7 @@ import { NativeBaseProvider, Text, Box } from "native-base";
 import { SelectedItemsProvider } from './SelectedItemsContext.js';
 import { OrdersContext } from './stockContext.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserProvider } from './userContext.js';
 
 
 AppRegistry.registerComponent('main', () => App);  // a crucial addition in the project to expicitly define app registration when other dependecies was interfering in the automatic registration of the app component in the expo build AppEntry.js file
@@ -40,8 +41,8 @@ const App = () => {
   return (
     <OrdersProvider>
     <NativeBaseProvider>
+      <UserProvider>
       <SelectedItemsProvider onCartChange={handleCartChange}>
-      
     <NavigationContainer>
       <Stack.Navigator initialRouteName="signup">
         <Stack.Screen name="signup" options={{ headerShown: false }} component={signupPage} />
@@ -60,8 +61,8 @@ const App = () => {
         <Stack.Screen name="rechargeMain" options={{ headerShown: false }} component={rechargeMainPage}/>
       </Stack.Navigator>
     </NavigationContainer>
-
     </SelectedItemsProvider>
+    </UserProvider>
     </NativeBaseProvider>
     </OrdersProvider>
     

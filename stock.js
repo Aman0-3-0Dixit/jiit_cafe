@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { KeyboardAvoidingView, ScrollView, TouchableOpacity } from 'react-native';
 import { StyleSheet, View, SafeAreaView, Image, TextInput, Flex } from 'react-native';
 import { Card, Button, Text } from 'react-native-elements';
@@ -7,93 +7,157 @@ import { BottomTabAdmin } from './components/bottomTabAdmin.js';
 //import AdminCartButton from './components/AdminCartButton.js';
 //import { Center } from 'native-base';
 
+
 export default function Stock () {
 
-  const [items, setItems] = useState([
-    { id: 1, name: 'Coffee', stock: 0 },
-    { id: 2, name: 'Pasta', stock: 0 },
-    { id: 3, name: 'Idli', stock: 0 },
-    { id: 4, name: 'Hotdog', stock: 0 },
-    { id: 5, name: 'Patties', stock: 0 },
-    { id: 6, name: 'Burger', stock: 0 },
-    { id: 7, name: 'Sandwich', stock: 0 },
-    { id: 8, name: 'Aaloo Boonda', stock: 0 },
-    { id: 9, name: 'Paneer Patties', stock: 0 },
-    { id: 10, name: 'Pav Bhaaji', stock: 0 },
-    { id: 11, name: 'Kachori', stock: 0 },
-  ]);
-
+  const [items, setItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredItems, setFilteredItems] = useState([...items]); 
-
+  const [filteredItems, setFilteredItems] = useState([]);
   const [inputValues, setInputValues] = useState({});
 
-  
-  
-  
-  const handleAddStock = (itemId) => {
-    const updatedFilteredItems = filteredItems.map((item) => {
-      if (item.id === itemId) {
-        const inputValue = parseInt(inputValues[itemId] || 0);
-        return { ...item, stock: item.stock + inputValue };
-      }
-      return item;
-    });
-  
-    setFilteredItems(updatedFilteredItems);
-  };
-  
-  
+  useEffect(() => {
+    fetch('http://192.168.1.2:3000/adminAuth/stockfetch')
+      .then((response) => response.json())
+      .then((data) => {
+        setItems(data);
+        setFilteredItems(data);
 
-  const handleInputChange = (itemId, inputValue) => {
-    setInputValues({ ...inputValues, [itemId]: inputValue });
-  };
-    
+        const initialInputValues = {};
+        data.forEach((item) => {
+          initialInputValues[item.itemid] = '';
+        });
+        setInputValues(initialInputValues);
+      })
+      .catch((error) => console.error('Error fetching stock data:', error));
+  }, []);
+
+
+
   const handleSearch = (text) => {
-    setSearchQuery(text); // Update the search query state
+    setSearchQuery(text);
     const filtered = items.filter(
       (item) =>
-        item.name.toLowerCase().includes(text.toLowerCase()) ||
-        String(item.id).includes(text)
+        item.itemName.toLowerCase().includes(text.toLowerCase()) ||
+        item.itemid.includes(text)
     );
-    setFilteredItems(filtered); // Update the filtered items state
+    setFilteredItems(filtered);
   };
 
-    return (
-      <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior='height'
-      keyboardShouldPersistTaps='always' 
-      keyboardVerticalOffset={-500}
-      >
-      
-      <SafeAreaView style={styles.container2} keyboardShouldPersistTaps='always'>
-      <Image
-            source={require('./jiitcafeassests/cafelogo.png')} 
-            style={{ width: 60, height: 60, position:'absolute', top: 35, left: 10 }}
+  const handleInputChange = (itemId, inputValue) => {
+    setInputValues((prevInputValues) => ({
+      ...prevInputValues,
+      [itemId]: inputValue,
+    }));
+  };
+
+  const handleAddStock = async (itemId) => {
+    const inputValue = parseInt(inputValues[itemId] || 0);
+    console.log('Updating stock for item:', itemId, 'with value:', inputValue);
+
+    try {
+      // Call the API to update stock
+      const response = await fetch('http://192.168.1.2:3000/adminAuth/addStock', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          itemId,
+          updatedStock: inputValue,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Fetch updated stock data after successful update
+        fetch('http://192.168.1.2:3000/adminAuth/stockfetch')
+          .then((response) => response.json())
+          .then((updatedData) => {
+            setItems(updatedData);
+            setFilteredItems(updatedData);
+          })
+          .catch((error) => console.error('Error fetching updated stock data:', error));
+  
+        // Update the local state or perform any other actions
+        console.log('Stock updated successfully:', data.updatedItem);
+      } else {
+        console.error('Error updating stock:', data.error);
+      }
+    } catch (error) {
+      console.error('Error updating stock:', error);
+    }
+  };
+
+
+  const handleDeleteStock = async (itemId) => {
+    const inputValue = parseInt(inputValues[itemId] || 0);
+    console.log('Deleting stock for item:', itemId, 'with value:', inputValue);
+  
+    try {
+      // Call the API to delete stock
+      const response = await fetch('http://192.168.1.2:3000/adminAuth/deleteStock', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          itemId,
+          deletedStock: inputValue,
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (data.success) {
+        // Fetch updated stock data after successful deletion
+        fetch('http://192.168.1.2:3000/adminAuth/stockfetch')
+          .then((response) => response.json())
+          .then((updatedData) => {
+            setItems(updatedData);
+            setFilteredItems(updatedData);
+          })
+          .catch((error) => console.error('Error fetching updated stock data:', error));
+  
+        // Update the local state or perform any other actions
+        console.log('Stock deleted successfully:', data.updatedItem);
+      } else {
+        console.error('Error deleting stock:', data.error);
+      }
+    } catch (error) {
+      console.error('Error deleting stock:', error);
+    }
+  };
+  
+
+
+  return (
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior='height' keyboardShouldPersistTaps='always' keyboardVerticalOffset={-500}>
+      <SafeAreaView style={styles.container}>
+        <Image source={require('./jiitcafeassests/cafelogo.png')} style={{ width: 60, height: 60, position: 'absolute', top: 35, left: 10 }} />
+        <Text style={{ fontSize: 19, fontWeight: 'bold', position: 'absolute', textAlign: 'left', left: 74, top: 55, color: 'black' }}>
+          JIIT CAFE
+        </Text>
+        <TextInput
+          style={styles.searchBar}
+          placeholder="Search by name or ID"
+          value={searchQuery}
+          onChangeText={handleSearch}
         />
-        
-          <Text style={{fontSize: 19, fontWeight: 'bold', position:'absolute', textAlign: 'left', left:74 ,top:55, color: 'black'}}>
-            JIIT CAFE</Text>
+        <StatusBar style="auto" />
+      </SafeAreaView>
 
-          <TextInput
-            style={styles.searchBar}
-            placeholder="Search by name or ID"
-            value={searchQuery}
-            onChangeText={handleSearch}/>
-
-          <StatusBar style="auto" />
-
-       </SafeAreaView>
-       
-       <ScrollView style={styles.container}>
-      {filteredItems.map((item) => (
-        <View key={item.id} style={styles.cardContainer}>
-        <Card key={item.id} >
-          
+  <ScrollView style={styles.container}>
+  {filteredItems
+    .sort((a, b) => a.itemid - b.itemid)
+    .map((item) => (
+      <View key={item.itemid} style={styles.cardContainer}>
+        <Card key={item.itemid}>
           <View style={styles.cardHeader}>
-            <Text style={styles.itemTitle}>{item.id}: {item.name}</Text>
-            <Text style={styles.stockText}>Stock: {item.stock}</Text>
+            <Text style={styles.itemTitle}>
+              {item.itemid}: {item.itemName}
+            </Text>
+            <Text style={styles.stockText}>Stock: {item.quantity}</Text>
           </View>
           <View style={styles.cardBody}>
             <View style={styles.inputContainer}>
@@ -101,27 +165,40 @@ export default function Stock () {
                 style={styles.inputField}
                 placeholder="Update Stock"
                 keyboardType="numeric"
-                value={inputValues[item.id]}
-                onChangeText={(text) => handleInputChange(item.id, text)}
+                value={inputValues[item.itemid]}
+                onChangeText={(text) => handleInputChange(item.itemid, text)}
               />
             </View>
             <View style={styles.addButtonContainer}>
               <Button
                 title="Add"
-                onPress={() => handleAddStock(item.id)}
+                onPress={() => {
+                  // Handling the logic to update stock
+                  handleAddStock(item.itemid);
+                }}
                 buttonStyle={styles.addButton}
+              />
+            </View>
+            <View style={styles.deleteButtonContainer}>
+              <Button
+                title="Delete"
+                onPress={() => {
+                  // Handling the logic to delete stock
+                  handleDeleteStock(item.itemid);
+                }}
+                buttonStyle={styles.deleteButton}
               />
             </View>
           </View>
         </Card>
-        </View>
-      ))}
-    </ScrollView>
-    <BottomTabAdmin focussedIndex={0} />
+      </View>
+    ))}
+</ScrollView>
 
-    </KeyboardAvoidingView>    
-    
+      <BottomTabAdmin focussedIndex={0} />
+    </KeyboardAvoidingView>
   );
+
 }
 
 
@@ -130,7 +207,8 @@ const styles = StyleSheet.create({
 
   searchBar: {
     top: 102,
-    height: 40,
+    marginBottom: 15,
+    height: 50,
     borderColor: 'gray',
     borderWidth: 1,
     borderRadius: 15,
@@ -145,26 +223,29 @@ const styles = StyleSheet.create({
       margin: 0
     },
     container: {
-      marginTop: 150,
-      marginBottom: 60,
+      top: -30,
+      marginTop: 40,
+      marginBottom: 30,
+      paddingBottom: 30,
       alignContent: 'center'
     },
     cardContainer: {
-        height: 135, 
+        height: 135,
+        marginBottom:20,
+         
     },  
     cardHeader: {
       flexDirection: 'column',
       height: 200,
-      //justifyContent: 'space-between',
+      alignItems: 'flex-start',
     },
     itemTitle: {
-      top: 15,
-      fontSize: 23,
+      fontSize: 20,
       fontWeight: 'bold',
     },
     stockText: {
       fontSize: 20,
-      top: 22
+      top: 22,
     },
     cardBody: {
       flexDirection: 'column',
@@ -172,8 +253,8 @@ const styles = StyleSheet.create({
       height: 220,
       //alignItems: 'center',
       position: 'absolute',
-      top: 0
-      , left: 250
+      top: 2,
+      left: 250
     },
     inputContainer: {
       flexDirection: 'row',
@@ -210,5 +291,18 @@ const styles = StyleSheet.create({
       width:100,
       flexDirection: 'row',
       alignItems: 'center',
+    },
+    deleteButtonContainer: {
+      position: 'absolute',
+      top: 70,
+      right: 112,
+      width: 100,
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    deleteButton: {
+      backgroundColor: '#FF0000',
+      width: 90,
+      borderRadius: 50,
     },
   });

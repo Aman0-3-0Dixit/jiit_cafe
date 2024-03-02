@@ -12,14 +12,49 @@ import { BottomTabUser } from './components/bottomTabUser.js';
 import { useSelectedItems } from './SelectedItemsContext.js';
 import { SwipeRow } from 'native-base';
 import SwipeValueBasedUi from './components/swipeList.js';
+import { useUser } from './userContext';
 
 
-export default function Cart () {
-    // Get the screen width
+
+
+export default function Cart ({ navigation }) {
     const screenWidth = Dimensions.get('window').width;
     const screenLength = Dimensions.get('window').height;
 
+    const { userData } = useUser();
+
     const { selectedItems, removeItemFromCart, cardData } = useSelectedItems();
+
+    const handlePlaceOrder = async () => {
+      console.log("Placing Order...");
+      console.log(selectedItems);
+
+      const { token } = userData;
+      
+      try {
+        const response = await fetch('http:///192.168.1.2:3000/auth/placeorder', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
+          },
+          body: JSON.stringify({
+            selectedItems,
+          }),
+        });
+
+        console.log('API Response:', response);
+        console.log(userData);
+    
+        // After successfully placing the order, navigate to 'ordersUser'
+        navigation.navigate('ordersUser', { showTokenPopup: true });
+      } catch (error) {
+        console.error('Error placing order:', error);
+        // Handle error (e.g., show a message to the user)
+      }
+    };
+
+
     return (
         <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -70,7 +105,16 @@ export default function Cart () {
               <View style={{ top: 150, height: screenLength - 40, }}>
               {/* Content for when selectedItems.length is not 0 */}
               {selectedItems.length > 0 && (
-                <SwipeValueBasedUi /> // Render the SwipeValueBasedUi once
+                <>
+                <SwipeValueBasedUi />
+                <View style={styles.placeOrderButton}>
+                    <TouchableOpacity onPress={handlePlaceOrder}>
+                       <Text style={{ fontSize: 18, color: 'white', fontWeight: 'bold' }}>
+                           Place Order
+                       </Text>
+                    </TouchableOpacity>
+                </View>
+                </>
               )}
               </View>
                 )
@@ -158,16 +202,29 @@ const styles = StyleSheet.create({
 
 
     image: {
-      width: 50, // Adjust the image width as needed
-      height: 50, // Adjust the image height as needed
-      marginRight: 10, // Spacing between the image and text
-      borderRadius: 5, // Add border radius to the image
+      width: 50,
+      height: 50,
+      marginRight: 10,
+      borderRadius: 5, 
     },
 
 
     text: {
-      fontSize: 16, // Adjust the text font size as needed
-      fontWeight: 'bold', // Text style
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+
+    placeOrderButton: {
+      position: 'absolute',
+      bottom: 170,
+      right: 75,
+      width: 250,
+      backgroundColor: 'green',
+      padding: 12,
+      borderRadius: 7,
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1,
     },
   
   

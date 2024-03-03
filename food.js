@@ -12,10 +12,12 @@ import { reduce } from 'lodash';
 import { useSelectedItems } from './SelectedItemsContext.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchUserDetails } from './fetchApi.js';
+import { useUser } from './userContext.js';
 
 
 export default function Food () {
   const navigation = useNavigation();
+  const userData = useUser();
 
   const { selectedItems, setSelectedItems, cardData, addOrUpdateItemInCart } = useSelectedItems();
   const [prevCost, setNewTotalCost] = useState(0);
@@ -30,13 +32,13 @@ export default function Food () {
     const [userDetails, setUserDetails] = useState(null);
 
     // Fetch user details when the component mounts
-    useEffect(() => {
-      const fetchUserData = async () => {
-        const userDetailsData = await fetchUserDetails();
-        setUserDetails(userDetailsData);
-      };
+    const fetchUserData = async (userData) => {
+      const userDetailsData = await fetchUserDetails(userData);
+      setUserDetails(userDetailsData);
+    };
   
-      fetchUserData();
+    useEffect(() => {
+      fetchUserData(userData);
     }, []);
 
 

@@ -17,23 +17,23 @@ export function Cards ({ imageUrl, dishName, coinCount, id, onCountChange }) {
     const prevCount = count;
 
     const handleIncrement = () => {
-      if(isAvailable){
+      //if(isAvailable){}
       const newCount = count + 1;
       setCount(newCount);
-      onCountChange(id, newCount, prevCount);}
+      onCountChange(id, newCount, prevCount);
     };
     
 
     const handleDecrement = () => {
-      if(isAvailable){
+      //if(isAvailable){}
       if (count > 0) {
         const newCount = count - 1;
         setCount(newCount);
-        onCountChange(id, newCount, prevCount);}
+        onCountChange(id, newCount, prevCount);
       }
     };
 
-    const checkItemAvailability = async (id) => {
+    /*const checkItemAvailability = async () => {
       try {
         const response = await fetch('http://192.168.1.104:3000/user/checkItemAvailability', {
           method: 'POST',
@@ -53,8 +53,8 @@ export function Cards ({ imageUrl, dishName, coinCount, id, onCountChange }) {
     };
 
     useEffect(() => {
-      checkItemAvailability(id);
-    }, [id]);
+      checkItemAvailability();
+    }, [id]);*/
 
     
   return < Box alignItems = "center" w = {'100%'} >
@@ -70,7 +70,7 @@ export function Cards ({ imageUrl, dishName, coinCount, id, onCountChange }) {
           borderColor: "coolGray.600",
           backgroundColor: "gray.700",
         }}
-        opacity={isAvailable ? 1 : 0.5} // Adjust the opacity based on availability
+        //opacity={isAvailable ? 1 : 0.5} // Adjust the opacity based on availability
       >
         <AspectRatio ratio={4/3}>
           <Image source={ imageUrl } alt={dishName} resizeMode="cover" w={'100%'} h={'100%'} />

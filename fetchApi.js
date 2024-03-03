@@ -1,11 +1,11 @@
 // fetchApi.mjs
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const fetchUserDetails = async () => {
-  try {
-    const token = await AsyncStorage.getItem('token');
-    console.log('Token:', token);
 
+export const fetchUserDetails = async (userData) => {
+  console.log('Fetching user details:', userData);
+  const {token} = userData;
+  try {
     if (!token) {
       // Token not found, handle as needed (e.g., redirect to login)
       return null;

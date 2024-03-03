@@ -1,6 +1,6 @@
 //cart.js
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { KeyboardAvoidingView, ScrollView, TouchableOpacity } from 'react-native';
 import { StyleSheet, Text, View, SafeAreaView, Image, TextInput, Flex } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -13,6 +13,7 @@ import { useSelectedItems } from './SelectedItemsContext.js';
 import { SwipeRow } from 'native-base';
 import SwipeValueBasedUi from './components/swipeList.js';
 import { useUser } from './userContext';
+import { fetchUserDetails } from './fetchApi.js';
 
 
 
@@ -24,6 +25,19 @@ export default function Cart ({ navigation }) {
     const { userData } = useUser();
 
     const { selectedItems, removeItemFromCart, cardData } = useSelectedItems();
+
+    // State to store user details
+    const [userDetails, setUserDetails] = useState(null);
+
+    // Fetch user details when the component mounts
+    const fetchUserData = async (userData) => {
+    const userDetailsData = await fetchUserDetails(userData);
+    setUserDetails(userDetailsData);
+    };
+      
+    useEffect(() => {
+      fetchUserData(userData);
+    }, []);
 
     const handlePlaceOrder = async () => {
       console.log("Placing Order...");
@@ -79,7 +93,11 @@ export default function Cart ({ navigation }) {
             source={require('./jiitcafeassests/jcoins.png')} 
             style={{ width: 33, height: 33,  }} // Adjust the dimensions as needed
             />
-            <Text style={{fontSize:20, }}>100</Text>
+              {userDetails ? (
+                 <Text style={{ fontSize: 20, }}>{userDetails.jCoins}</Text>
+                 ) : (
+                 <Text>0</Text>
+              )}
             </View>
   
             <Image

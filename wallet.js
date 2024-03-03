@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { KeyboardAvoidingView, ScrollView, TouchableOpacity } from 'react-native';
 import { StyleSheet, Text, View, SafeAreaView, Image, TextInput, Flex } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -7,9 +7,25 @@ import {Cards} from './components/cards.js';
 import { NativeBaseProvider, Box, Center } from "native-base";
 import { FlatList } from 'react-native';
 import { BottomTabUser } from './components/bottomTabUser.js';
+import { fetchUserDetails } from './fetchApi.js';
+import { useUser } from './userContext';
 
 export default function Wallet () {
 
+  const { userData } = useUser();
+
+  // State to store user details
+  const [userDetails, setUserDetails] = useState(null);
+
+  // Fetch user details when the component mounts
+  const fetchUserData = async (userData) => {
+    const userDetailsData = await fetchUserDetails(userData);
+    setUserDetails(userDetailsData);
+  };
+    
+  useEffect(() => {
+    fetchUserData(userData);
+  }, []);
 
     return (
         <KeyboardAvoidingView
@@ -34,7 +50,11 @@ export default function Wallet () {
             source={require('./jiitcafeassests/jcoins.png')} 
             style={{ width: 40, height: 40,  }} // Adjust the dimensions as needed
             />
-            <Text style={{fontSize:30, }} >100</Text>
+              {userDetails ? (
+                  <Text style={{ fontSize: 20, }}>{userDetails.jCoins}</Text>
+                  ) : (
+                  <Text>0</Text>
+              )}
             </View>
 
             <Image

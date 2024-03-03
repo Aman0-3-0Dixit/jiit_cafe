@@ -18,14 +18,13 @@ const TokenPopup = ({ isVisible, onClose }) => {
 
 const styles = StyleSheet.create({
   modalContainer: {
-    height: '100%',
+    height: '80%',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // semi-transparent background
   },
   modalContent: {
-    backgroundColor: 'rgba(0, 0, 0, 0)',
-    height: '70%',
+    padding: 40,
+    height: '80%',
 
     width: '100%',
   }

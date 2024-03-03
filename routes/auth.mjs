@@ -90,7 +90,6 @@ router.post('/placeorder', authenticateToken, async (req, res) => {
   console.log('User ID:', userId);
 
   try {
-    // Fetch the user based on the user ID
     const user = await User.findById(userId);
 
     if (user) {
@@ -99,7 +98,6 @@ router.post('/placeorder', authenticateToken, async (req, res) => {
 
       const orderId = generateRandomString(5);
 
-      // Create a new order for the 'user' model schema
       const newOrderForUser = {
         orderId: orderId,
         orderDate: new Date(),
@@ -113,7 +111,6 @@ router.post('/placeorder', authenticateToken, async (req, res) => {
         })),
       };
 
-      // Update the user document with the new order in the user collection
       const updatedUser = await User.findByIdAndUpdate(
         userId,
         {
@@ -122,11 +119,9 @@ router.post('/placeorder', authenticateToken, async (req, res) => {
         { new: true }
       );
 
-      // Create a new order for the 'pendingOrders' collection
-      const newOrderForPendingOrdersCollection = new PendingOrders({
+      const newOrderForPendingOrdersCollection = {
         orderId: orderId,
         orderDate: new Date(),
-        orderTime: new Date().toLocaleTimeString(),
         orderedBy: [{ name: user.name, enrollmentNo: user.enrollmentNo }],
         items: selectedItems.map(item => ({
           id: item.id,
@@ -136,10 +131,20 @@ router.post('/placeorder', authenticateToken, async (req, res) => {
           imageUrl: item.imageUrl,
           key: item.key,
         })),
-      });
+      };
 
-      // Save the new order to the 'pendingOrders' collection
-      await newOrderForPendingOrdersCollection.save();
+      await PendingOrders.create(newOrderForPendingOrdersCollection);
+
+      setTimeout(async () => {
+        await FailedOrders.create(newOrderForPendingOrdersCollection);
+
+        await PendingOrders.findOneAndDelete({ orderId: orderId });
+
+        await User.findByIdAndUpdate(userId, {
+          $pull: { pendingOrders: { orderId: orderId } },
+          $push: { failedOrders: newOrderForUser },
+        });
+      }, 15 * 60 * 1000); 
 
       res.status(200).json(updatedUser);
     } else {
@@ -150,7 +155,6 @@ router.post('/placeorder', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
 
 
 
@@ -193,25 +197,62 @@ router.get('/pendingOrders', authenticateToken, async (req, res) => {
 
 
 
-
-
-
-router.get('/checkUser/:enrollmentNo', async (req, res) => {
+router.get('/userorders', authenticateToken, async (req, res) => {
+  console.log('Received request at /userorders');
+  const userId = req.user.userId;
+  console.log('User ID:', userId);
+  
   try {
-    const enrollmentNo = req.params.enrollmentNo;
-    const user = await User.findOne({ enrollmentNo });
 
-    if (user) {
-      // User found
-      res.status(200).json({ exists: true, user });
-    } else {
-      // User not found
-      res.status(404).json({ exists: false, message: 'User not found' });
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
+
+    const userData = {
+      successfulOrders: user.successfulOrders,
+      pendingOrders: user.pendingOrders,
+      failedOrders: user.failedOrders,
+    };
+
+    res.json(userData);
+
   } catch (error) {
-    console.log('here');
-    console.error('Error checking user:', error);
+    console.error('Error fetching user data:', error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+router.get('/alluserorders', authenticateToken, async (req, res) => {
+  console.log('Received request at /alluserorders');
+  const userId = req.user.userId; // Assuming the user is available in req.user after authentication
+  console.log('User ID:', userId);
+  try {
+    const user = await User.findById(userId);
+
+      console.log('populated');
+      console.log(user);
+
+    if (!user) {
+      console.log('User not found');
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Add a status field to each order in the arrays
+    const allOrders = [
+      ...user.pendingOrders.map(order => ({ ...order.toObject(), status: 'pending' })),
+      ...user.failedOrders.map(order => ({ ...order.toObject(), status: 'failed' })),
+      ...user.successfulOrders.map(order => ({ ...order.toObject(), status: 'successful' })),
+    ];
+
+    console.log('All orders:', allOrders);
+
+    res.json(allOrders);
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 

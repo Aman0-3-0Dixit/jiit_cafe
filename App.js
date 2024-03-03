@@ -39,9 +39,9 @@ const App = () => {
   };
 
   return (
+    <UserProvider>
     <OrdersProvider>
     <NativeBaseProvider>
-      <UserProvider>
       <SelectedItemsProvider onCartChange={handleCartChange}>
     <NavigationContainer>
       <Stack.Navigator initialRouteName="signup">
@@ -62,9 +62,9 @@ const App = () => {
       </Stack.Navigator>
     </NavigationContainer>
     </SelectedItemsProvider>
-    </UserProvider>
     </NativeBaseProvider>
     </OrdersProvider>
+    </UserProvider>
     
   );
 };

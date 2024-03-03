@@ -119,7 +119,7 @@ export default function Login() {
         }*/
 
       } else {
-        const userResponse = await fetch('http://192.168.1.2:3000/auth/signin', {
+        const userResponse = await fetch('http://192.168.1.104:3000/auth/signin', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -10,20 +10,82 @@ import { BottomTabUser } from './components/bottomTabUser.js';
 import TokenPopup from './Tokenpopup';
 import OrderList from './orderList.js';
 import maintokenpage from './maintokenpage.js';
-
+import { useUser } from './userContext';
 
 export default function OrderUser () {
 
   const [isTokenPopupVisible, setTokenPopupVisible] = useState(false);
+  const [orders, setOrders] = useState([]);
   const navigation = useNavigation();
   const route = useRoute();
+  const { userData } = useUser();
 
   useEffect(() => {
-    // Check if the route has the showTokenPopup parameter
     if (route.params?.showTokenPopup) {
       setTokenPopupVisible(true);
     }
+
+    fetchOrders();
   }, [route.params]);
+
+  const fetchOrders = async () => {
+    try {
+      const { token } = userData;
+  
+      // Fetch user data with orders
+      const response = await fetch('http://192.168.1.104:3000/auth/alluserorders', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+  
+      if (response.ok) {
+        const userData = await response.json();
+  
+        // Extract orders from all three arrays
+        const allOrders = [
+          ...userData.successfulOrders.map(order => ({ ...order, status: 'successful' })),
+          ...userData.failedOrders.map(order => ({ ...order, status: 'failed' })),
+          ...userData.pendingOrders.map(order => ({ ...order, status: 'pending' })),
+        ];
+  
+        setOrders(prevOrders => [...prevOrders, ...allOrders]);
+      }
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    }
+  };
+  
+  
+
+  const renderOrder = ({ item }) => (
+    <View style={styles.orderContainer}>
+      <View style={styles.orderHeader}>
+        <Text style={styles.orderHeaderText}>{`Order ID: ${item.orderId}`}</Text>
+        <Text style={styles.orderHeaderText}>{`Order Date: ${item.orderDate}`}</Text>
+        <Text style={styles.orderStatus}>{`Status: ${item.status}`}</Text>
+      </View>
+  
+      <View style={styles.orderItems}>
+        <Text style={styles.orderItemsHeader}>Ordered Items:</Text>
+        {item.items.map((orderedItem, index) => (
+          <View key={index} style={styles.orderedItem}>
+            <Text>{`${orderedItem.count} X ${orderedItem.dishName}`}</Text>
+            <Text>{`${orderedItem.coinCount * orderedItem.count}`} JCoins</Text>
+          </View>
+        ))}
+      </View>
+  
+      <View style={styles.orderFooter}>
+        <Text style={styles.orderFooterText}>Total Coins: {calculateTotalCoins(item.items)}</Text>
+        {item.status === 'pending' && (
+          <Text style={styles.orderFooterText}>{`Time Left: ${formatTime(item.timer)}`}</Text>
+        )}
+      </View>
+    </View>
+  );
 
     function truncateText(text, maxLength) {
       if (text.length > maxLength) {
@@ -55,58 +117,27 @@ export default function OrderUser () {
         <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior='height'
-        keyboardShouldPersistTaps='always' // This should handle taps outside TextInput
+        keyboardShouldPersistTaps='always'
         keyboardVerticalOffset={-500}
-        >
-        
-        <SafeAreaView style={styles.container} keyboardShouldPersistTaps='always'>
-          
-        <SafeAreaView style={styles.curvedLine}/>
-        {isTokenPopupVisible ? (
-          // Display TokenPopup if visible
-          <TokenPopup isVisible={isTokenPopupVisible} onClose={() => setTokenPopupVisible(false)} />
-        ) : (
-          // Display default content if TokenPopup is not visible
-          <>
-            <SafeAreaView style={styles.curvedLine} />
-            <Image
-              source={require('./imgs/jcafelogo1-removebg-preview.png')}
-              style={{ width: 60, height: 60, position: 'absolute', top: 60, left: 30 }}
-            />
-            <Text style={{ fontSize: 19, fontWeight: 'bold', position: 'absolute', textAlign: 'left', left: 100, top: 75, color: 'black' }}>
-              JIIT CAFE
-            </Text>
-            <View style={[styles.fields, { bottom: 311, right: 85, width: 100, height: 50, backgroundColor: 'white', borderColor: 'black', borderWidth: 1, flexDirection: 'row' }]} overflow='hidden'>
-              <Image
-                source={require('./jiitcafeassests/jcoins.png')}
-                style={{ width: 33, height: 33 }}
+      >
+        <SafeAreaView>
+          {isTokenPopupVisible ? (
+            <TokenPopup isVisible={isTokenPopupVisible} onClose={() => setTokenPopupVisible(false)} />
+          ) : (
+            <>
+              <FlatList
+                data={orders}
+                renderItem={renderOrder}
+                keyExtractor={(item) => item.orderId.toString()}
               />
-              <Text style={{ fontSize: 20 }}>100</Text>
-            </View>
-            <Image
-              source={require('./jiitcafeassests/account.png')}
-              style={{ width: 45, height: 45, position: 'absolute', top: 60, right: 25 }}
-            />
-            <Image
-              source={require('./jiitcafeassests/noorders.png')}
-              style={{ width: 350, height: 350, position: 'absolute', top: 140, right: 35 }}
-            />
-            <Text style={{ fontSize: 20, fontWeight: '600', top: 320 }}>No Orders Found</Text>
-            <Text style={{ fontSize: 16, fontWeight: '300', padding: 10, textAlign: 'center', top: 320 }}>
-              Looks like you haven't ordered anything yet
-            </Text>
-            <StatusBar style="auto" />
-          </>
-        )}
-  
-            <StatusBar style="auto" />
-  
-         </SafeAreaView>
-  
-         <NativeBaseProvider>
-            <BottomTabUser focussedIndex={1} />
-         </NativeBaseProvider>
-  
+              <StatusBar style="auto" />
+            </>
+          )}
+        </SafeAreaView>
+        <NativeBaseProvider>
+          {/* Assuming this is your BottomTabUser component */}
+          <BottomTabUser focussedIndex={1} />
+        </NativeBaseProvider>
       </KeyboardAvoidingView>
       
       

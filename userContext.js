@@ -4,7 +4,7 @@ import { createContext, useContext, useState } from 'react';
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState();
 
   const updateUser = (newUserData) => {
     setUserData(newUserData);

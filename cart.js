@@ -32,7 +32,7 @@ export default function Cart ({ navigation }) {
       const { token } = userData;
       
       try {
-        const response = await fetch('http:///192.168.1.2:3000/auth/placeorder', {
+        const response = await fetch('http://192.168.1.104:3000/auth/placeorder', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ export default function Cart ({ navigation }) {
         console.log(userData);
     
         // After successfully placing the order, navigate to 'ordersUser'
-        navigation.navigate('ordersUser', { showTokenPopup: true });
+        navigation.navigate('ordersUser',{ showTokenPopup : true });
       } catch (error) {
         console.error('Error placing order:', error);
         // Handle error (e.g., show a message to the user)

@@ -16,7 +16,7 @@ export default function Stock () {
   const [inputValues, setInputValues] = useState({});
 
   useEffect(() => {
-    fetch('http://192.168.1.2:3000/adminAuth/stockfetch')
+    fetch('http://192.168.1.104:3000/adminAuth/stockfetch')
       .then((response) => response.json())
       .then((data) => {
         setItems(data);
@@ -56,7 +56,7 @@ export default function Stock () {
 
     try {
       // Call the API to update stock
-      const response = await fetch('http://192.168.1.2:3000/adminAuth/addStock', {
+      const response = await fetch('http://192.168.1.104:3000/adminAuth/addStock', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ export default function Stock () {
 
       if (data.success) {
         // Fetch updated stock data after successful update
-        fetch('http://192.168.1.2:3000/adminAuth/stockfetch')
+        fetch('http://192.168.1.104:3000/adminAuth/stockfetch')
           .then((response) => response.json())
           .then((updatedData) => {
             setItems(updatedData);
@@ -96,7 +96,7 @@ export default function Stock () {
   
     try {
       // Call the API to delete stock
-      const response = await fetch('http://192.168.1.2:3000/adminAuth/deleteStock', {
+      const response = await fetch('http://192.168.1.104:3000/adminAuth/deleteStock', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -111,7 +111,7 @@ export default function Stock () {
   
       if (data.success) {
         // Fetch updated stock data after successful deletion
-        fetch('http://192.168.1.2:3000/adminAuth/stockfetch')
+        fetch('http://192.168.1.104:3000/adminAuth/stockfetch')
           .then((response) => response.json())
           .then((updatedData) => {
             setItems(updatedData);

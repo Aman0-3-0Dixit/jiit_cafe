@@ -4,6 +4,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import Admin from '../models/admins.mjs';
 import Stock from '../models/stock.mjs';
+import User from '../models/users.mjs';
 
 const router = express.Router();
 
@@ -117,6 +118,59 @@ router.post('/deleteStock', async (req, res) => {
 });
 
 
+router.post('/userDetails', async (req, res) => {
+  const enrollmentNo = req.body.enrollmentNo;
+  console.log('enrollmentNo:', enrollmentNo);
+
+  try {
+    // Fetch user details based on the user ID
+    const user = await User.findOne({ enrollmentNo: enrollmentNo });
+
+    if (user) {
+      // Send user details as the response
+      res.status(200).json({
+        enrollmentNo: user.enrollmentNo,
+        name: user.name,
+        jCoins: user.jCoins,
+      });
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching user details:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+router.post('/rechargeJCoins', async (req, res) => {
+  const { enrollmentNo, amount } = req.body;
+
+  try {
+    // Fetch user details based on the user ID
+    const user = await User.findOne({ enrollmentNo: enrollmentNo });
+
+    if (user) {
+      const oldJcoins = user.jCoins;
+      const updatedUser = await User.findOneAndUpdate(
+        { enrollmentNo: enrollmentNo }, // Criteria for finding the document
+        { $set: { jCoins: oldJcoins + amount } }, // Update operation
+        { new: true }
+      );
+
+      res.status(200).json({
+        enrollmentNo: updatedUser.enrollmentNo,
+        name: updatedUser.name,
+        jCoins: updatedUser.jCoins,
+      });
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error recharging JCoins:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 
 export default router;

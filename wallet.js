@@ -12,7 +12,9 @@ import { useUser } from './userContext';
 
 export default function Wallet () {
 
-  const { userData } = useUser();
+  const { userData } = useUser() || {};
+  const { token } = userData || {}; // Destructuring token from userData because it contains updateUser and userData so we need to destructure it since the token is nested inside the userData
+
 
   // State to store user details
   const [userDetails, setUserDetails] = useState(null);

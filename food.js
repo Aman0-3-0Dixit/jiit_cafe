@@ -17,7 +17,8 @@ import { useUser } from './userContext.js';
 
 export default function Food () {
   const navigation = useNavigation();
-  const userData = useUser();
+  const { userData } = useUser() || {};
+  const { token } = userData || {}; // Destructuring token from userData because it contains updateUser and userData so we need to destructure it since the token is nested inside the userData
 
   const { selectedItems, setSelectedItems, cardData, addOrUpdateItemInCart } = useSelectedItems();
   const [prevCost, setNewTotalCost] = useState(0);
@@ -29,17 +30,19 @@ export default function Food () {
 
 
     // State to store user details
-    const [userDetails, setUserDetails] = useState(null);
+    const [userDetails, setUserDetails] = useState();
 
     // Fetch user details when the component mounts
-    const fetchUserData = async (userData) => {
+    const fetchUserData = async () => {
       const userDetailsData = await fetchUserDetails(userData);
       setUserDetails(userDetailsData);
     };
   
     useEffect(() => {
-      fetchUserData(userData);
-    }, []);
+      if (userData) {
+        fetchUserData();
+      }
+    }, [userData]);
 
 
 

@@ -22,7 +22,9 @@ export default function Cart ({ navigation }) {
     const screenWidth = Dimensions.get('window').width;
     const screenLength = Dimensions.get('window').height;
 
-    const { userData } = useUser();
+    const { userData } = useUser() || {};
+    const { token } = userData || {}; // Destructuring token from userData because it contains updateUser and userData so we need to destructure it since the token is nested inside the userData
+
 
     const { selectedItems, removeItemFromCart, cardData } = useSelectedItems();
 

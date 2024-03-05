@@ -26,8 +26,6 @@ import { UserProvider } from './userContext.js';
 
 AppRegistry.registerComponent('main', () => App);  // a crucial addition in the project to expicitly define app registration when other dependecies was interfering in the automatic registration of the app component in the expo build AppEntry.js file
 
-//AsyncStorage.setItem('exampleKey', 'exampleValue'); // This is just an example, can be removed after confirming initialization
-
 const Stack = createStackNavigator();
 
 const App = () => {

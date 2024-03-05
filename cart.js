@@ -22,16 +22,22 @@ export default function Cart ({ navigation }) {
     const screenWidth = Dimensions.get('window').width;
     const screenLength = Dimensions.get('window').height;
 
+    const { updateUserDetails } = useUser() || {};
+
     const { userData } = useUser() || {};
     const { token } = userData || {}; // Destructuring token from userData because it contains updateUser and userData so we need to destructure it since the token is nested inside the userData
 
 
     const { selectedItems, removeItemFromCart, cardData } = useSelectedItems();
 
+    const totalJcoins = selectedItems.reduce((total, item) => {
+      return total + (item.count * item.coinCount);
+    }, 0);
+
     // State to store user details
     const [userDetails, setUserDetails] = useState(null);
 
-    // Fetch user details when the component mounts
+    // Fetching user details when the component mounts
     const fetchUserData = async (userData) => {
     const userDetailsData = await fetchUserDetails(userData);
     setUserDetails(userDetailsData);
@@ -47,10 +53,10 @@ export default function Cart ({ navigation }) {
       const { token } = userData;
       const {jCoins} = userDetails;
 
-      const totalOrderJCoins = selectedItems.reduce((total, item) => total + (item.jCoins || 0) * item.quantity, 0);
+      console.log('Total order jCoins:', totalJcoins);
+      console.log('User jCoins:', jCoins);
 
-
-      if(jCoins >= totalOrderJCoins){
+      if(jCoins >= totalJcoins){
       try {
         const response = await fetch('http://192.168.1.104:3000/auth/placeorder', {
           method: 'POST',
@@ -64,14 +70,13 @@ export default function Cart ({ navigation }) {
         });
 
         console.log('API Response:', response);
+        updateUserDetails();
         console.log(userData);
     
-        // After successfully placing the order, navigate to 'ordersUser'
-        navigation.navigate('ordersUser',{ showTokenPopup : true });
+        //navigation.navigate('ordersUser',{ showTokenPopup : true });
 
       } catch (error) {
         console.error('Error placing order:', error);
-        // Handle error (e.g., show a message to the user)
       }}
 
       else{

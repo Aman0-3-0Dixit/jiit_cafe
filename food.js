@@ -142,20 +142,6 @@ export default function Food () {
     searchItem(newText);
   };
 
-  
-
-
-  /*const cardData = [
-    { id: '1', imageUrl: require('./jiitcafeassests/Indian-samosa-chutney.webp'), dishName: 'Samosa', coinCount: 10 },
-    { id: '2', imageUrl: require('./jiitcafeassests/pasta.png'), dishName: 'Pasta', coinCount: 20 },
-    { id: '3', imageUrl: require('./jiitcafeassests/patties.png'), dishName: 'Patty', coinCount: 10 },
-    { id: '4', imageUrl: require('./jiitcafeassests/noodles.png'), dishName: 'Noodles', coinCount: 20 },
-    { id: '5', imageUrl: require('./jiitcafeassests/burger.png'), dishName: 'Burger', coinCount: 30 },
-    { id: '6', imageUrl: require('./jiitcafeassests/hotdog.png'), dishName: 'Hotdog', coinCount: 20 },
-    { id: '7', imageUrl: require('./jiitcafeassests/coffee.png'), dishName: 'Coffee', coinCount: 10 },
-    // Add more card data as needed
-  ];*/
-
   const renderCard = ({ item }) => (
     <Cards imageUrl={item.imageUrl} id={item.id} dishName={item.dishName} price={item.price} coinCount={item.coinCount}  onCountChange={(id,newCount,prevCount) => handleCountChange(item.id, newCount,prevCount)} count={item.count}  />
   );
@@ -165,7 +151,7 @@ export default function Food () {
       <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior='height'
-      keyboardShouldPersistTaps='always' // This should handle taps outside TextInput
+      keyboardShouldPersistTaps='always'
       keyboardVerticalOffset={-500}
       >
       
@@ -173,7 +159,7 @@ export default function Food () {
       <SafeAreaView style={styles.curvedLine}/>
       <Image
           source={require('./imgs/jcafelogo1-removebg-preview.png')} 
-          style={{ width: 60, height: 60, position:'absolute', top: 60, left: 30 }} // Adjust the dimensions as needed
+          style={{ width: 60, height: 60, position:'absolute', top: 60, left: 30 }}
       />
       
         <Text style={{fontSize: 19, fontWeight: 'bold', position:'absolute', textAlign: 'left', left:100 ,top:75, color: 'black'}}>
@@ -182,7 +168,7 @@ export default function Food () {
           <View style={[styles.fields, {bottom:311, right:85, width: 100, height: 50, backgroundColor: 'white', borderColor:'black', borderWidth: 1, flexDirection: 'row'}]} overflow = 'hidden' >
           <Image
           source={require('./jiitcafeassests/jcoins.png')} 
-          style={{ width: 33, height: 33,  }} // Adjust the dimensions as needed
+          style={{ width: 33, height: 33,  }}
           />
             {userDetails ? (
              <Text style={{ fontSize: 20, }}>{userDetails.jCoins}</Text>
@@ -197,7 +183,7 @@ export default function Food () {
                          fontSize={19}
                          placeholder='Search for food items'
                          placeholderTextColor= 'white'
-                         onChangeText={(text) => setSearchText(text)} // Update the search text state
+                         onChangeText={(text) => setSearchText(text)}
                          value={searchText}
                          blurOnSubmit={true}
                          onSubmitEditing={searchFood}
@@ -208,7 +194,7 @@ export default function Food () {
           <TouchableOpacity onPress={toggleAccountBox} style={{ zIndex: 0 }}>
           <Image
           source={require('./jiitcafeassests/account.png')} 
-          style={{ width: 45, height: 45, position:'absolute', top: -150, right: -177 }} // Adjust the dimensions as needed
+          style={{ width: 45, height: 45, position:'absolute', top: -150, right: -177 }}
           />
           </TouchableOpacity>
 

@@ -12,7 +12,7 @@ import Stock from '../models/stock.mjs';
 
 // Function to generate a random alphanumeric string
 const generateRandomString = (length) => {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const characters = '0123456789';
   const randomString = Array.from(crypto.randomFillSync(new Uint8Array(length)))
     .map((byte) => characters[byte % characters.length])
     .join('');
@@ -153,9 +153,9 @@ router.post('/placeorder', authenticateToken, async (req, res) => {
 
       res.status(201).json({ message: 'Order placed successfully' });
 
-    setTimeout(async () => {
+    /*setTimeout(async () => {
       await handleTimeout(userId, orderId);
-      }, 20 * 1000);
+      }, 20 * 1000);*/
     }
   } catch (error) {
     console.error('Error placing order:', error);

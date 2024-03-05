@@ -44,7 +44,7 @@ const renderScene = SceneMap({
     key: 'second',
     title: 'Tab 2',
     iconSource: require('../jiitcafeassests/a-orders.png'),
-    navigTo: 'ordersAdmin',
+    navigTo: 'currentAdminOrders',
   }, {
     key: 'third',
     title: 'Tab 3',

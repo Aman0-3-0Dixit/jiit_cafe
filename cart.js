@@ -43,10 +43,14 @@ export default function Cart ({ navigation }) {
 
     const handlePlaceOrder = async () => {
       console.log("Placing Order...");
-      console.log(selectedItems);
 
       const { token } = userData;
-      
+      const {jCoins} = userDetails;
+
+      const totalOrderJCoins = selectedItems.reduce((total, item) => total + (item.jCoins || 0) * item.quantity, 0);
+
+
+      if(jCoins >= totalOrderJCoins){
       try {
         const response = await fetch('http://192.168.1.104:3000/auth/placeorder', {
           method: 'POST',
@@ -64,9 +68,14 @@ export default function Cart ({ navigation }) {
     
         // After successfully placing the order, navigate to 'ordersUser'
         navigation.navigate('ordersUser',{ showTokenPopup : true });
+
       } catch (error) {
         console.error('Error placing order:', error);
         // Handle error (e.g., show a message to the user)
+      }}
+
+      else{
+        console.log('Not enough jCoins');
       }
     };
 

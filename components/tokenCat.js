@@ -64,9 +64,9 @@ export function Tokentop({ focussedIndex }) {
   return (
     <TabView
       navigationState={{ index, routes: [
-        { key: 'first', title: 'Current', navigTo: 'ordersAdmin' },
-        { key: 'second', title: 'Used', navigTo: 'orders2' },
-        { key: 'third', title: 'Unused', navigTo: 'orders3' },
+        { key: 'first', title: 'Current', navigTo: 'currentAdminOrders' },
+        { key: 'second', title: 'Used', navigTo: 'usedAdminOrders' },
+        { key: 'third', title: 'Unused', navigTo: 'unusedAdminOrders' },
       ]}}
       renderTabBar={renderTabBar}
       renderScene={renderScene}

@@ -5,14 +5,14 @@ import signupPage from './signup.js';
 import loginPage from './login.js'; 
 import foodPage from './food.js';
 import orderUserPage from './ordersUser.js';
-import orderAdminPage from './ordersAdmin.js';
+import orderAdminPage from './currentAdminOrders.js';
 import walletPage from './wallet.js';
 import cartPage from './cart.js';
 import stockPage from './stock.js';
 import rechargePage from './recharge.js';
 import orderPlacePage from './orderPlace.js';
-import order2Page from './orders2List.js';
-import order3Page from './orders3List.js';
+import order2Page from './usedAdminOrders.js';
+import order3Page from './unusedAdminOrders.js';
 import rechargeMainPage from './rechargeMain.js';
 import adminCartPage from './adminCart.js'
 import { OrdersProvider } from './stockContext.js';
@@ -54,9 +54,9 @@ const App = () => {
         <Stack.Screen name="stock" options={{ headerShown: false }} component={stockPage}/>
         <Stack.Screen name="recharge" options={{ headerShown: false }} component={rechargePage}/>
         <Stack.Screen name="orderPlace" options={{ headerShown: false }} component={orderPlacePage}/>
-        <Stack.Screen name="ordersAdmin" options={{ headerShown: false }} component={orderAdminPage}/>
-        <Stack.Screen name="orders2" options={{ headerShown: false }} component={order2Page}/>
-        <Stack.Screen name="orders3" options={{ headerShown: false }} component={order3Page}/>
+        <Stack.Screen name="currentAdminOrders" options={{ headerShown: false }} component={orderAdminPage}/>
+        <Stack.Screen name="usedAdminOrders" options={{ headerShown: false }} component={order2Page}/>
+        <Stack.Screen name="unusedAdminOrders" options={{ headerShown: false }} component={order3Page}/>
         <Stack.Screen name="adminCart" options={{ headerShown: false }} component={adminCartPage}/>
         <Stack.Screen name="rechargeMain" options={{ headerShown: false }} component={rechargeMainPage}/>
       </Stack.Navigator>

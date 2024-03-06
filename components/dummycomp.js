@@ -37,7 +37,7 @@ export function Cards ({ imageUrl, dishName, coinCount, id, onCountChange }) {
 
     const checkAvailability = async () => {
       try {
-        const response = await fetch('http://192.168.1.104:3000/user/checkItemAvailability', {
+        const response = await fetch('http://192.168.193.204:3000/user/checkItemAvailability', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

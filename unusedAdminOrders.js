@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState,useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { KeyboardAvoidingView, ScrollView, TouchableOpacity } from 'react-native';
 import { StyleSheet, Text, View, SafeAreaView, Image, TextInput, Flex } from 'react-native';
 import { NativeBaseProvider, Box, Center } from "native-base";
@@ -7,125 +7,185 @@ import { BottomTabAdmin } from './components/bottomTabAdmin.js';
 import { Tokentop } from './components/tokenCat.js';
 import { OrdersContext } from './stockContext.js'; 
 import { Card } from 'react-native-elements';
-//import { OrdersContext } from './stockContext.js'; 
 
 export default function Orders3() {
 
-  const { unusedOrders } = useContext(OrdersContext); 
+  const [failedOrders, setFailedOrders] = useState([]);
+  const [orderCompleted, setOrderCompleted] = useState(false);
 
-      return (
-        <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior='height'
-        keyboardShouldPersistTaps='always' 
-        keyboardVerticalOffset={-500}
-        >
-        
-        <SafeAreaView style={styles.container} keyboardShouldPersistTaps='always'>
+  const fetchFailedOrders = async () => {
+    try {
+      const response = await fetch('http://192.168.193.204:3000/adminAuth/failedOrdersFetch', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+        });
 
-        <Image
-            source={require('./jiitcafeassests/cafelogo.png')} 
-            style={{ width: 60, height: 60, position:'absolute', top: 35, left: 10 }} // Adjust the dimensions as needed
-        />
-        
-          <Text style={{fontSize: 19, fontWeight: 'bold', position:'absolute', textAlign: 'left', left:74 ,top:55, color: 'black'}}>
-            JIIT CAFE</Text>
-            <StatusBar style="auto" />
+      const data = await response.json();
 
-           <Tokentop focussedIndex={2} />
+      if (response.ok) {
+        console.log('orders successfully retrieved');
+        setFailedOrders(data);
+      } else {
+        console.error('Error completing order:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error fetching successful orders:', error);
+    }
+  };
 
-        </SafeAreaView>
 
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={{ backgroundColor: '#ffffff', marginTop: 80, marginBottom: 60 }}>
-        <View style={{ alignItems: 'center' }}>
-          {unusedOrders && unusedOrders.length > 0 ? (
-            unusedOrders.map((order) => (
-              <Card key={order.Order_Id} containerStyle={{ width: '100%', marginBottom: -10, backgroundColor: '#AAAAAA' }}>
-                <View>
-                  <View style={{ flexDirection: 'row' }}>
-                    <Text style={{ fontWeight: 500, fontSize: 18 }}>{`Order ID: ${order.Order_Id}`}</Text>
-                    <Text style={{ fontWeight: 500, fontSize: 18, position: 'absolute', left: 220 }}>{`${order.Name_of_customer}`}</Text>
-                  </View>
-                  {order.items.map((item, index) => (
-                    <Text style={{ fontWeight: 500, fontSize: 18, top: 12 }} key={index}>{`${item.name} x ${item.quantity}`}</Text>
-                  ))}
-                </View>
-              </Card>
-            ))
-          ) : (
-            <View style={{ alignItems: 'center', marginTop: 20 }}>
-              <Image
-                source={require('./jiitcafeassests/a-noorders.png')}
-                style={{ width: 350, height: 350 }}
-              />
-              <Text>No unused orders yet</Text>
-            </View>
-          )}
-        </View>
-      </ScrollView>
-  
-         <NativeBaseProvider>
-            <BottomTabAdmin focussedIndex={1} />
-         </NativeBaseProvider>
-  
-      </KeyboardAvoidingView>
-      
-      
-    );
-  }
+  useEffect(() => {
+    setOrderCompleted(true);
+    fetchFailedOrders();
+    setOrderCompleted(false);
+  }, [orderCompleted]);
 
-  const styles = StyleSheet.create({
-
-    container: {
-      flex: 1,
-      alignItems: 'center', // Center horizontally
-      justifyContent: 'center', // Center vertically
-    },
-  
-    curvedLine: {
-      position: 'absolute',
-      top: 50,
-      width: '89%',
-      height: '3%',
-      borderTopWidth: 2.5,
-      borderRightWidth: 0.1,
-      borderLeftWidth: 0.1,
-      borderRadius: 20,
-      borderTopColor: 'black',
-      borderRightColor: 'white',
-      borderLeftColor: 'white',
-    },
-  
+  return (
+    <KeyboardAvoidingView
+    style={{ flex: 1 }}
+    behavior='height'
+    keyboardShouldPersistTaps='always' 
+    keyboardVerticalOffset={-500}
+    >
     
-      roundedBox: {
-        position: 'absolute', // Change the position to absolute
-        bottom: 230,
-        width: 350, // Adjust the width as needed
-        height: 300, // Adjust the height as needed
-        backgroundColor: 'aqua', // Background color of the box
-        borderRadius: 30, // Adjust the borderRadius to control the roundness
-        justifyContent: 'center', // Center content vertically
-        alignItems: 'center', // Center content horizontally
-    },
+    <SafeAreaView style={styles.container} keyboardShouldPersistTaps='always'>
+
+    <Image
+        source={require('./jiitcafeassests/cafelogo.png')} 
+        style={{ width: 60, height: 60, position:'absolute', top: 35, left: 10 }}
+    />
+    
+      <Text style={{fontSize: 19, fontWeight: 'bold', position:'absolute', textAlign: 'left', left:74 ,top:55, color: 'black'}}>
+        JIIT CAFE</Text>
+       
+        <StatusBar style="auto" />
+
+    <Tokentop focussedIndex={1}  />
+
+
+  </SafeAreaView>
+  <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={{ backgroundColor: '#ffffff', marginTop: 160, marginBottom: 60 }}>
+  <View style={{ alignItems: 'center', marginBottom: 60 }}>
+    {failedOrders.length > 0 ? (
+      failedOrders.map((order) => (
+        <Card key={order.orderId} containerStyle={{ width: '100%', marginBottom: -17, backgroundColor: '#AAAAAA', paddingBottom: 25 }}>
+          <View>
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={{ fontWeight: 500, fontSize: 18 }}>{`Order ID: ${order.orderId}`}</Text>
+              <Text style={{ fontWeight: 500, fontSize: 18, position: 'absolute', left: 220 }}>{`${order.orderedBy[0].name}`}</Text>
+            </View>
+            <View style={{
+              borderBottomWidth: 1,
+              borderBottomColor: 'black',
+              width: 800,
+              textAlign: 'center',
+              paddingVertical: 10,
+              position: 'absolute',
+              top: 8,
+              right: -17
+            }} >
+            </View>
+
+            {order.items.map((item, index) => (
+              <Text style={{ fontWeight: 500, fontSize: 18, top: 12 }} key={index}>{`${item.dishName} x ${item.count}`}</Text>
+            ))}
+
+              <Text style={{ fontWeight: 500, fontSize: 16, top: 15 }}>{`Date: ${new Date(order.orderDate).toLocaleDateString()}`}</Text>
+              
+          </View>
+        </Card>
+      ))
+    ) : (
+      <View style={{ alignItems: 'center', marginTop: 20 }}>
+        <Image
+          source={require('./jiitcafeassests/a-noorders.png')}
+          style={{ width: 350, height: 350 }}
+        />
+        <Text>No failed orders</Text>
+      </View>
+    )}
+  </View>
+</ScrollView>
+
+<NativeBaseProvider>
+<BottomTabAdmin focussedIndex={1} />
+</NativeBaseProvider>
+
+  </KeyboardAvoidingView>
   
-    fields: {
-      position: 'absolute', // Change the position to absolute
-      bottom: 380,
-      right: 30,
-      width: 250, // Adjust the width as needed
-      height: 40, // Adjust the height as needed
-      backgroundColor: 'black', // Background color of the box
-      borderRadius: 30, // Adjust the borderRadius to control the roundness
-      justifyContent: 'center', // Center content vertically
-      alignItems: 'center', // Center content horizontally
-    },
   
-    input: {
-      width: 300,
-      height: 40,
-      borderColor: 'gray',
-      borderWidth: 1,
-      padding: 10,
-    }, 
-  });
-  
+);
+}
+
+const styles = StyleSheet.create({
+
+container: {
+  flex: 1,
+  alignItems: 'center', // Center horizontally
+  justifyContent: 'center', // Center vertically
+},
+
+
+
+  roundedBox: {
+    position: 'absolute', 
+    bottom: 230,
+    width: 350, 
+    height: 300, 
+    backgroundColor: 'aqua', // Background color of the box
+    borderRadius: 30, 
+    justifyContent: 'center', // Center content vertically
+    alignItems: 'center', // Center content horizontally
+},
+
+fields: {
+  position: 'absolute',
+  bottom: 380,
+  right: 30,
+  width: 250, 
+  height: 40, 
+  backgroundColor: 'black', // Background color of the box
+  borderRadius: 30, 
+  justifyContent: 'center', // Center content vertically
+  alignItems: 'center', // Center content horizontally
+},
+
+input: {
+  width: 300,
+  height: 40,
+  borderColor: 'gray',
+  borderWidth: 1,
+  padding: 10,
+},
+container2: {
+  flex: 1,
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+card: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  backgroundColor: '#f0f0f0',
+  padding: 16,
+  marginVertical: 8,
+  width: '90%',
+  borderRadius: 10,
+},
+orderDetails: {
+  flex: 1,
+},
+checkbox: {
+  borderWidth: 1,
+  borderColor: 'black',
+  borderRadius: 5,
+  padding: 8,
+},
+noOrdersContainer: {
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+
+});

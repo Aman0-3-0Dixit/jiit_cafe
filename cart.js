@@ -58,7 +58,7 @@ export default function Cart ({ navigation }) {
 
       if(jCoins >= totalJcoins){
       try {
-        const response = await fetch('http://192.168.1.104:3000/auth/placeorder', {
+        const response = await fetch('http://192.168.193.204:3000/auth/placeorder', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

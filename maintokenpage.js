@@ -81,7 +81,7 @@ const MaintokenPage = ({ onClose }) => {
       const { token } = userData;
 
       // Fetch all user orders
-      const response = await fetch('http://192.168.1.104:3000/auth/alluserorders', {
+      const response = await fetch('http://192.168.193.204:3000/auth/alluserorders', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

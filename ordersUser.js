@@ -33,7 +33,7 @@ export default function OrderUser () {
       const { token } = userData;
   
       // Fetch user data with orders
-      const response = await fetch('http://192.168.1.104:3000/auth/alluserorders', {
+      const response = await fetch('http://192.168.193.204:3000/auth/alluserorders', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

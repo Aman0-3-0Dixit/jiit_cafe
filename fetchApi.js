@@ -10,7 +10,7 @@ export const fetchUserDetails = async (userData) => {
       return null;
     }
 
-    const response = await fetch('http://192.168.1.104:3000/user/details', {
+    const response = await fetch('http://192.168.193.204:3000/user/details', {
       method: 'GET',
       headers: {
         'Authorization' : `Bearer ${token}`,

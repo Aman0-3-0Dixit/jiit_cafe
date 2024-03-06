@@ -23,7 +23,7 @@ export default function Recharge() {
 
   const handleRecharge = async () => {
     try {
-      const response = await fetch('http://192.168.1.104:3000/adminAuth/userDetails', {
+      const response = await fetch('http://192.168.193.204:3000/adminAuth/userDetails', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

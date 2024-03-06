@@ -7,6 +7,7 @@ import Stock from '../models/stock.mjs';
 import User from '../models/users.mjs';
 import PendingOrders from '../models/pendingOrders.mjs';
 import CompletedOrders from '../models/successfulOrders.mjs';
+import FailedOrders from '../models/failedOrders.mjs';
 
 const router = express.Router();
 
@@ -255,6 +256,36 @@ router.post('/completeOrder', async (req, res) => {
   } catch (error) {
     console.error('Error completing order:', error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+router.get('/successfulOrdersFetch', async (req, res) => {
+  console.log('Received request at /successfulOrdersFetch');
+  try {
+    const orders = await CompletedOrders.find({}, '_id orderId orderDate orderTime orderedBy items');
+    console.log('Orders:', orders);
+
+    res.json(orders);
+
+  } catch (error) {
+    console.error('Error fetching successful orders:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+router.get('/failedOrdersFetch', async (req, res) => {
+  console.log('Received request at /failedOrdersFetch');
+  try {
+    const orders = await FailedOrders.find({}, '_id orderId orderDate orderTime orderedBy items');
+    console.log('Orders:', orders);
+
+    res.json(orders);
+
+  } catch (error) {
+    console.error('Error fetching failed orders:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 

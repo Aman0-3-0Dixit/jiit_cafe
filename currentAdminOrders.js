@@ -17,7 +17,7 @@ export default function OrderAdmin () {
 
   const handleCompleteOrder = async (orderId, orderedBy) => {
     try {
-      const response = await fetch('http://192.168.1.104:3000/adminAuth/completeOrder', {
+      const response = await fetch('http://192.168.193.204:3000/adminAuth/completeOrder', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -40,7 +40,7 @@ export default function OrderAdmin () {
   };
 
   useEffect(() => {
-    fetch('http://192.168.1.104:3000/adminAuth/fetchPendingOrders')
+    fetch('http://192.168.193.204:3000/adminAuth/fetchPendingOrders')
       .then((response) => response.json())
       .then((data) => setPendingOrders(data))
       .catch((error) => console.error('Error fetching pending orders:', error));
@@ -101,6 +101,7 @@ export default function OrderAdmin () {
                 ))}
 
                   <Text style={{ fontWeight: 500, fontSize: 16, top: 15 }}>{`Date: ${new Date(order.orderDate).toLocaleDateString()}`}</Text>
+                  
                   
 
 
